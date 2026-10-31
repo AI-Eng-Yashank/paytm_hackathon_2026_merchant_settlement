@@ -1,0 +1,2014 @@
+{
+  "merchants": [
+    {
+      "merchant_id": "M1001",
+      "name": "Sharma General Store",
+      "business": "Kirana Store",
+      "city": "Jaipur",
+      "kyc_tier": "FULL",
+      "account_age_days": 400,
+      "risk_score": 0.1,
+      "settlement_bank": "HDFC Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M1002",
+      "name": "Gupta Medicals",
+      "business": "Medical Store",
+      "city": "Lucknow",
+      "kyc_tier": "FULL",
+      "account_age_days": 400,
+      "risk_score": 0.1,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M1003",
+      "name": "Balaji Tiffin Centre",
+      "business": "Tiffin Centre",
+      "city": "Hyderabad",
+      "kyc_tier": "FULL",
+      "account_age_days": 400,
+      "risk_score": 0.1,
+      "settlement_bank": "ICICI Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M1004",
+      "name": "Mehta Electronics",
+      "business": "Mobile Shop",
+      "city": "Pune",
+      "kyc_tier": "FULL",
+      "account_age_days": 400,
+      "risk_score": 0.1,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M1005",
+      "name": "New Fashion Hub",
+      "business": "Boutique",
+      "city": "Surat",
+      "kyc_tier": "MIN",
+      "account_age_days": 12,
+      "risk_score": 0.85,
+      "settlement_bank": "HDFC Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2001",
+      "name": "Choudhury Hardware Store",
+      "business": "Hardware Store",
+      "city": "Panipat",
+      "kyc_tier": "FULL",
+      "account_age_days": 1296,
+      "risk_score": 0.09,
+      "settlement_bank": "HDFC Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2002",
+      "name": "Kapoor Bakery",
+      "business": "Mobile Shop",
+      "city": "Kota",
+      "kyc_tier": "FULL",
+      "account_age_days": 202,
+      "risk_score": 0.03,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2003",
+      "name": "Sami Tiffin Centre",
+      "business": "Hardware Store",
+      "city": "Ludhiana",
+      "kyc_tier": "FULL",
+      "account_age_days": 787,
+      "risk_score": 0.08,
+      "settlement_bank": "ICICI Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2004",
+      "name": "Kamdar Salon",
+      "business": "Hardware Store",
+      "city": "Dibrugarh",
+      "kyc_tier": "FULL",
+      "account_age_days": 174,
+      "risk_score": 0.08,
+      "settlement_bank": "HDFC Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2005",
+      "name": "Issac Salon",
+      "business": "Chai Stall",
+      "city": "Muzaffarnagar",
+      "kyc_tier": "FULL",
+      "account_age_days": 352,
+      "risk_score": 0.09,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2006",
+      "name": "Mall Tiffin Centre",
+      "business": "Stationery",
+      "city": "Kozhikode",
+      "kyc_tier": "FULL",
+      "account_age_days": 1070,
+      "risk_score": 0.05,
+      "settlement_bank": "HDFC Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2007",
+      "name": "Oak Bakery",
+      "business": "Chai Stall",
+      "city": "Bhatpara",
+      "kyc_tier": "FULL",
+      "account_age_days": 1143,
+      "risk_score": 0.09,
+      "settlement_bank": "Kotak Mahindra Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2008",
+      "name": "Nayar Kirana Store",
+      "business": "Dairy",
+      "city": "Tiruchirappalli",
+      "kyc_tier": "FULL",
+      "account_age_days": 599,
+      "risk_score": 0.29,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2009",
+      "name": "Chatterjee Bakery",
+      "business": "Hardware Store",
+      "city": "Hapur",
+      "kyc_tier": "FULL",
+      "account_age_days": 1060,
+      "risk_score": 0.03,
+      "settlement_bank": "ICICI Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2010",
+      "name": "Bassi Tiffin Centre",
+      "business": "Salon",
+      "city": "Jorhat",
+      "kyc_tier": "FULL",
+      "account_age_days": 1033,
+      "risk_score": 0.29,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2011",
+      "name": "Radhakrishnan Chai Stall",
+      "business": "Stationery",
+      "city": "Suryapet",
+      "kyc_tier": "FULL",
+      "account_age_days": 984,
+      "risk_score": 0.05,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2012",
+      "name": "Pathak Mobile Shop",
+      "business": "Medical Store",
+      "city": "Coimbatore",
+      "kyc_tier": "FULL",
+      "account_age_days": 124,
+      "risk_score": 0.26,
+      "settlement_bank": "HDFC Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2013",
+      "name": "Kari Boutique",
+      "business": "Mobile Shop",
+      "city": "Vijayawada",
+      "kyc_tier": "FULL",
+      "account_age_days": 253,
+      "risk_score": 0.05,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2014",
+      "name": "Chaudhuri Medical Store",
+      "business": "Mobile Shop",
+      "city": "Alwar",
+      "kyc_tier": "FULL",
+      "account_age_days": 452,
+      "risk_score": 0.07,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2015",
+      "name": "Patla Stationery",
+      "business": "Medical Store",
+      "city": "Uluberia",
+      "kyc_tier": "FULL",
+      "account_age_days": 163,
+      "risk_score": 0.2,
+      "settlement_bank": "Kotak Mahindra Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2016",
+      "name": "Kadakia Kirana Store",
+      "business": "Tiffin Centre",
+      "city": "Madurai",
+      "kyc_tier": "FULL",
+      "account_age_days": 836,
+      "risk_score": 0.02,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2017",
+      "name": "Walla Bakery",
+      "business": "Dairy",
+      "city": "Ujjain",
+      "kyc_tier": "FULL",
+      "account_age_days": 1170,
+      "risk_score": 0.04,
+      "settlement_bank": "ICICI Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2018",
+      "name": "Raghavan Tiffin Centre",
+      "business": "Medical Store",
+      "city": "Proddatur",
+      "kyc_tier": "FULL",
+      "account_age_days": 1278,
+      "risk_score": 0.04,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2019",
+      "name": "Nair Sweet Shop",
+      "business": "Mobile Shop",
+      "city": "Berhampur",
+      "kyc_tier": "FULL",
+      "account_age_days": 1431,
+      "risk_score": 0.22,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2020",
+      "name": "Mutti Medical Store",
+      "business": "Stationery",
+      "city": "Agartala",
+      "kyc_tier": "FULL",
+      "account_age_days": 496,
+      "risk_score": 0.16,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2021",
+      "name": "Kakar Bakery",
+      "business": "Salon",
+      "city": "Rajpur Sonarpur",
+      "kyc_tier": "FULL",
+      "account_age_days": 1143,
+      "risk_score": 0.02,
+      "settlement_bank": "Kotak Mahindra Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2022",
+      "name": "Randhawa Bakery",
+      "business": "Mobile Shop",
+      "city": "Asansol",
+      "kyc_tier": "FULL",
+      "account_age_days": 762,
+      "risk_score": 0.08,
+      "settlement_bank": "Bank of Baroda",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2023",
+      "name": "Dewan Kirana Store",
+      "business": "Kirana Store",
+      "city": "Kishanganj",
+      "kyc_tier": "FULL",
+      "account_age_days": 743,
+      "risk_score": 0.24,
+      "settlement_bank": "Bank of Baroda",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2024",
+      "name": "Sangha Stationery",
+      "business": "Kirana Store",
+      "city": "Mirzapur",
+      "kyc_tier": "FULL",
+      "account_age_days": 816,
+      "risk_score": 0.18,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2025",
+      "name": "Devi Salon",
+      "business": "Medical Store",
+      "city": "Mysore",
+      "kyc_tier": "MIN",
+      "account_age_days": 16,
+      "risk_score": 0.91,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2026",
+      "name": "Choudhary Boutique",
+      "business": "Salon",
+      "city": "Kozhikode",
+      "kyc_tier": "FULL",
+      "account_age_days": 568,
+      "risk_score": 0.09,
+      "settlement_bank": "Bank of Baroda",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2027",
+      "name": "Bhatt Mobile Shop",
+      "business": "Kirana Store",
+      "city": "Eluru",
+      "kyc_tier": "FULL",
+      "account_age_days": 1411,
+      "risk_score": 0.07,
+      "settlement_bank": "ICICI Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2028",
+      "name": "Wadhwa Kirana Store",
+      "business": "Medical Store",
+      "city": "Begusarai",
+      "kyc_tier": "FULL",
+      "account_age_days": 594,
+      "risk_score": 0.07,
+      "settlement_bank": "ICICI Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2029",
+      "name": "Contractor Boutique",
+      "business": "Bakery",
+      "city": "Mau",
+      "kyc_tier": "MIN",
+      "account_age_days": 11,
+      "risk_score": 0.8,
+      "settlement_bank": "Bank of Baroda",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2030",
+      "name": "Memon Bakery",
+      "business": "Hardware Store",
+      "city": "Sangli-Miraj & Kupwad",
+      "kyc_tier": "FULL",
+      "account_age_days": 1418,
+      "risk_score": 0.26,
+      "settlement_bank": "Bank of Baroda",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2031",
+      "name": "Aggarwal Boutique",
+      "business": "Salon",
+      "city": "Orai",
+      "kyc_tier": "FULL",
+      "account_age_days": 836,
+      "risk_score": 0.21,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2032",
+      "name": "Tripathi Bakery",
+      "business": "Bakery",
+      "city": "Bihar Sharif",
+      "kyc_tier": "FULL",
+      "account_age_days": 1400,
+      "risk_score": 0.11,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2033",
+      "name": "Issac Medical Store",
+      "business": "Mobile Shop",
+      "city": "Dindigul",
+      "kyc_tier": "FULL",
+      "account_age_days": 1437,
+      "risk_score": 0.11,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2034",
+      "name": "Zacharia Dairy",
+      "business": "Dairy",
+      "city": "Khora ",
+      "kyc_tier": "FULL",
+      "account_age_days": 846,
+      "risk_score": 0.16,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2035",
+      "name": "Suresh Kirana Store",
+      "business": "Stationery",
+      "city": "Gorakhpur",
+      "kyc_tier": "FULL",
+      "account_age_days": 570,
+      "risk_score": 0.28,
+      "settlement_bank": "HDFC Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2036",
+      "name": "Mohanty Stationery",
+      "business": "Chai Stall",
+      "city": "Howrah",
+      "kyc_tier": "FULL",
+      "account_age_days": 385,
+      "risk_score": 0.23,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2037",
+      "name": "Brar Dairy",
+      "business": "Sweet Shop",
+      "city": "Shivpuri",
+      "kyc_tier": "FULL",
+      "account_age_days": 540,
+      "risk_score": 0.1,
+      "settlement_bank": "ICICI Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2038",
+      "name": "Walia Boutique",
+      "business": "Hardware Store",
+      "city": "Warangal",
+      "kyc_tier": "FULL",
+      "account_age_days": 1171,
+      "risk_score": 0.15,
+      "settlement_bank": "HDFC Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2039",
+      "name": "Gandhi Boutique",
+      "business": "Stationery",
+      "city": "Dehri",
+      "kyc_tier": "FULL",
+      "account_age_days": 1178,
+      "risk_score": 0.24,
+      "settlement_bank": "State Bank of India",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2040",
+      "name": "Kakar Salon",
+      "business": "Salon",
+      "city": "Bijapur",
+      "kyc_tier": "FULL",
+      "account_age_days": 888,
+      "risk_score": 0.22,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2041",
+      "name": "Prakash Tiffin Centre",
+      "business": "Chai Stall",
+      "city": "Hazaribagh",
+      "kyc_tier": "FULL",
+      "account_age_days": 432,
+      "risk_score": 0.03,
+      "settlement_bank": "Axis Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2042",
+      "name": "Dara Sweet Shop",
+      "business": "Medical Store",
+      "city": "Kamarhati",
+      "kyc_tier": "FULL",
+      "account_age_days": 1023,
+      "risk_score": 0.03,
+      "settlement_bank": "Kotak Mahindra Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2043",
+      "name": "Nigam Mobile Shop",
+      "business": "Tiffin Centre",
+      "city": "Giridih",
+      "kyc_tier": "FULL",
+      "account_age_days": 1029,
+      "risk_score": 0.21,
+      "settlement_bank": "Kotak Mahindra Bank",
+      "settlement_cycle": "T+1"
+    },
+    {
+      "merchant_id": "M2044",
+      "name": "Kannan Tiffin Centre",
+      "business": "Sweet Shop",
+      "city": "Madurai",
+      "kyc_tier": "FULL",
+      "account_age_days": 281,
+      "risk_score": 0.18,
+      "settlement_bank": "ICICI Bank",
+      "settlement_cycle": "T+1"
+    }
+  ],
+  "transactions": [
+    {
+      "txn_id": "TXN240001",
+      "merchant_id": "M1001",
+      "amount": 4500,
+      "days_ago": 1,
+      "time": "14:05",
+      "payer_vpa": "ravi.k@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN240002",
+      "merchant_id": "M1002",
+      "amount": 1200,
+      "days_ago": 0,
+      "time": "11:42",
+      "payer_vpa": "neha.s@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN240003",
+      "merchant_id": "M1002",
+      "amount": 1200,
+      "days_ago": 0,
+      "time": "11:42",
+      "payer_vpa": "neha.s@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN240002"
+    },
+    {
+      "txn_id": "TXN240004",
+      "merchant_id": "M1003",
+      "amount": 3250,
+      "days_ago": 2,
+      "time": "19:20",
+      "payer_vpa": "arjun.r@okicici",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN240005",
+      "merchant_id": "M1004",
+      "amount": 25000,
+      "days_ago": 7,
+      "time": "16:10",
+      "payer_vpa": "pooja.m@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN240006",
+      "merchant_id": "M1005",
+      "amount": 8000,
+      "days_ago": 6,
+      "time": "12:30",
+      "payer_vpa": "vikas.t@ybl",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250001",
+      "merchant_id": "M2001",
+      "amount": 5200,
+      "days_ago": 1,
+      "time": "17:05",
+      "payer_vpa": "yash94@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250002",
+      "merchant_id": "M2002",
+      "amount": 380,
+      "days_ago": 1,
+      "time": "10:15",
+      "payer_vpa": "gagan99@ybl",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250003",
+      "merchant_id": "M2003",
+      "amount": 1200,
+      "days_ago": 1,
+      "time": "18:15",
+      "payer_vpa": "girik90@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250004",
+      "merchant_id": "M2004",
+      "amount": 1800,
+      "days_ago": 8,
+      "time": "13:05",
+      "payer_vpa": "avi41@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250005",
+      "merchant_id": "M2005",
+      "amount": 30000,
+      "days_ago": 10,
+      "time": "17:30",
+      "payer_vpa": "saumya96@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250006",
+      "merchant_id": "M2006",
+      "amount": 5200,
+      "days_ago": 0,
+      "time": "19:15",
+      "payer_vpa": "pahal15@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260006",
+      "merchant_id": "M2006",
+      "amount": 5200,
+      "days_ago": 0,
+      "time": "19:15",
+      "payer_vpa": "pahal15@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250006"
+    },
+    {
+      "txn_id": "TXN250007",
+      "merchant_id": "M2007",
+      "amount": 2500,
+      "days_ago": 6,
+      "time": "19:30",
+      "payer_vpa": "tanveer2@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250008",
+      "merchant_id": "M2008",
+      "amount": 1200,
+      "days_ago": 2,
+      "time": "19:30",
+      "payer_vpa": "lajita65@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250009",
+      "merchant_id": "M2009",
+      "amount": 380,
+      "days_ago": 1,
+      "time": "09:15",
+      "payer_vpa": "aishani40@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250010",
+      "merchant_id": "M2010",
+      "amount": 1800,
+      "days_ago": 7,
+      "time": "18:45",
+      "payer_vpa": "jeet34@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250011",
+      "merchant_id": "M2011",
+      "amount": 1200,
+      "days_ago": 2,
+      "time": "09:15",
+      "payer_vpa": "chaaya9@ybl",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250012",
+      "merchant_id": "M2012",
+      "amount": 1200,
+      "days_ago": 1,
+      "time": "13:45",
+      "payer_vpa": "chakradev66@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250013",
+      "merchant_id": "M2013",
+      "amount": 150,
+      "days_ago": 2,
+      "time": "15:45",
+      "payer_vpa": "viraj46@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250014",
+      "merchant_id": "M2014",
+      "amount": 8800,
+      "days_ago": 0,
+      "time": "11:30",
+      "payer_vpa": "sudiksha18@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260014",
+      "merchant_id": "M2014",
+      "amount": 8800,
+      "days_ago": 0,
+      "time": "11:30",
+      "payer_vpa": "sudiksha18@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250014"
+    },
+    {
+      "txn_id": "TXN250015",
+      "merchant_id": "M2015",
+      "amount": 999,
+      "days_ago": 1,
+      "time": "21:15",
+      "payer_vpa": "isha2@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250016",
+      "merchant_id": "M2016",
+      "amount": 8800,
+      "days_ago": 2,
+      "time": "13:45",
+      "payer_vpa": "onveer34@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250017",
+      "merchant_id": "M2017",
+      "amount": 7300,
+      "days_ago": 7,
+      "time": "18:45",
+      "payer_vpa": "turvi8@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250018",
+      "merchant_id": "M2018",
+      "amount": 30000,
+      "days_ago": 10,
+      "time": "18:15",
+      "payer_vpa": "theodore52@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250019",
+      "merchant_id": "M2019",
+      "amount": 8800,
+      "days_ago": 2,
+      "time": "11:30",
+      "payer_vpa": "azad34@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250020",
+      "merchant_id": "M2020",
+      "amount": 2450,
+      "days_ago": 0,
+      "time": "12:30",
+      "payer_vpa": "dominic45@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260020",
+      "merchant_id": "M2020",
+      "amount": 2450,
+      "days_ago": 0,
+      "time": "12:30",
+      "payer_vpa": "dominic45@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250020"
+    },
+    {
+      "txn_id": "TXN250021",
+      "merchant_id": "M2021",
+      "amount": 380,
+      "days_ago": 2,
+      "time": "11:30",
+      "payer_vpa": "xalak39@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250022",
+      "merchant_id": "M2022",
+      "amount": 150,
+      "days_ago": 0,
+      "time": "16:30",
+      "payer_vpa": "alka34@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260022",
+      "merchant_id": "M2022",
+      "amount": 150,
+      "days_ago": 0,
+      "time": "16:30",
+      "payer_vpa": "alka34@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250022"
+    },
+    {
+      "txn_id": "TXN250023",
+      "merchant_id": "M2023",
+      "amount": 5200,
+      "days_ago": 2,
+      "time": "20:45",
+      "payer_vpa": "adya34@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250024",
+      "merchant_id": "M2024",
+      "amount": 3600,
+      "days_ago": 2,
+      "time": "09:30",
+      "payer_vpa": "theodore56@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250025",
+      "merchant_id": "M2025",
+      "amount": 999,
+      "days_ago": 6,
+      "time": "12:15",
+      "payer_vpa": "champak80@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250026",
+      "merchant_id": "M2026",
+      "amount": 1200,
+      "days_ago": 1,
+      "time": "09:45",
+      "payer_vpa": "pahal14@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250027",
+      "merchant_id": "M2027",
+      "amount": 3600,
+      "days_ago": 0,
+      "time": "21:30",
+      "payer_vpa": "upadhriti36@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260027",
+      "merchant_id": "M2027",
+      "amount": 3600,
+      "days_ago": 0,
+      "time": "21:30",
+      "payer_vpa": "upadhriti36@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250027"
+    },
+    {
+      "txn_id": "TXN250028",
+      "merchant_id": "M2028",
+      "amount": 3600,
+      "days_ago": 0,
+      "time": "18:45",
+      "payer_vpa": "advay5@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260028",
+      "merchant_id": "M2028",
+      "amount": 3600,
+      "days_ago": 0,
+      "time": "18:45",
+      "payer_vpa": "advay5@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250028"
+    },
+    {
+      "txn_id": "TXN250029",
+      "merchant_id": "M2029",
+      "amount": 3600,
+      "days_ago": 6,
+      "time": "17:15",
+      "payer_vpa": "isaac56@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250030",
+      "merchant_id": "M2030",
+      "amount": 2500,
+      "days_ago": 9,
+      "time": "13:45",
+      "payer_vpa": "sudiksha39@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250031",
+      "merchant_id": "M2031",
+      "amount": 7300,
+      "days_ago": 6,
+      "time": "13:45",
+      "payer_vpa": "pranav79@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250032",
+      "merchant_id": "M2032",
+      "amount": 15500,
+      "days_ago": 8,
+      "time": "17:45",
+      "payer_vpa": "yashica57@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250033",
+      "merchant_id": "M2033",
+      "amount": 8800,
+      "days_ago": 1,
+      "time": "09:15",
+      "payer_vpa": "neel19@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250034",
+      "merchant_id": "M2034",
+      "amount": 5200,
+      "days_ago": 2,
+      "time": "21:05",
+      "payer_vpa": "ekiya19@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250035",
+      "merchant_id": "M2035",
+      "amount": 3600,
+      "days_ago": 1,
+      "time": "21:45",
+      "payer_vpa": "janani59@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250036",
+      "merchant_id": "M2036",
+      "amount": 2500,
+      "days_ago": 9,
+      "time": "21:15",
+      "payer_vpa": "wridesh58@ybl",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250037",
+      "merchant_id": "M2037",
+      "amount": 1200,
+      "days_ago": 1,
+      "time": "11:15",
+      "payer_vpa": "ekapad70@okhdfc",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250038",
+      "merchant_id": "M2038",
+      "amount": 5200,
+      "days_ago": 1,
+      "time": "15:05",
+      "payer_vpa": "vaishnavi27@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250039",
+      "merchant_id": "M2039",
+      "amount": 8800,
+      "days_ago": 0,
+      "time": "13:45",
+      "payer_vpa": "pallavi63@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260039",
+      "merchant_id": "M2039",
+      "amount": 8800,
+      "days_ago": 0,
+      "time": "13:45",
+      "payer_vpa": "pallavi63@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250039"
+    },
+    {
+      "txn_id": "TXN250040",
+      "merchant_id": "M2040",
+      "amount": 5200,
+      "days_ago": 0,
+      "time": "17:05",
+      "payer_vpa": "mohini17@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260040",
+      "merchant_id": "M2040",
+      "amount": 5200,
+      "days_ago": 0,
+      "time": "17:05",
+      "payer_vpa": "mohini17@okaxis",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250040"
+    },
+    {
+      "txn_id": "TXN250041",
+      "merchant_id": "M2041",
+      "amount": 3600,
+      "days_ago": 0,
+      "time": "16:30",
+      "payer_vpa": "siya42@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN260041",
+      "merchant_id": "M2041",
+      "amount": 3600,
+      "days_ago": 0,
+      "time": "16:30",
+      "payer_vpa": "siya42@oksbi",
+      "status": "SUCCESS",
+      "duplicate_of": "TXN250041"
+    },
+    {
+      "txn_id": "TXN250042",
+      "merchant_id": "M2042",
+      "amount": 150,
+      "days_ago": 1,
+      "time": "12:05",
+      "payer_vpa": "devansh7@ybl",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250043",
+      "merchant_id": "M2043",
+      "amount": 3600,
+      "days_ago": 1,
+      "time": "20:30",
+      "payer_vpa": "victor28@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    },
+    {
+      "txn_id": "TXN250044",
+      "merchant_id": "M2044",
+      "amount": 12000,
+      "days_ago": 6,
+      "time": "15:15",
+      "payer_vpa": "daniel74@paytm",
+      "status": "SUCCESS",
+      "duplicate_of": null
+    }
+  ],
+  "settlements": [
+    {
+      "txn_id": "TXN240001",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "Beneficiary bank timeout"
+    },
+    {
+      "txn_id": "TXN240002",
+      "status": "SETTLED",
+      "utr": "UTR998877000",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN240003",
+      "status": "SETTLED",
+      "utr": "UTR998877000",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN240004",
+      "status": "PENDING",
+      "utr": "UTR998877001",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN240005",
+      "status": "PENDING",
+      "utr": "UTR998877002",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN240006",
+      "status": "PENDING",
+      "utr": "UTR998877003",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250001",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "NPCI switch timeout"
+    },
+    {
+      "txn_id": "TXN250002",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "NPCI switch timeout"
+    },
+    {
+      "txn_id": "TXN250003",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "NPCI switch timeout"
+    },
+    {
+      "txn_id": "TXN250004",
+      "status": "PENDING",
+      "utr": "UTR770000003",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250005",
+      "status": "PENDING",
+      "utr": "UTR770000004",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250006",
+      "status": "SETTLED",
+      "utr": "UTR770000005",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260006",
+      "status": "SETTLED",
+      "utr": "UTR770000005",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250007",
+      "status": "PENDING",
+      "utr": "UTR770000006",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250008",
+      "status": "PENDING",
+      "utr": "UTR770000007",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250009",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "Beneficiary bank timeout"
+    },
+    {
+      "txn_id": "TXN250010",
+      "status": "PENDING",
+      "utr": "UTR770000009",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250011",
+      "status": "PENDING",
+      "utr": "UTR770000010",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250012",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "Account validation pending"
+    },
+    {
+      "txn_id": "TXN250013",
+      "status": "PENDING",
+      "utr": "UTR770000012",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250014",
+      "status": "SETTLED",
+      "utr": "UTR770000013",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260014",
+      "status": "SETTLED",
+      "utr": "UTR770000013",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250015",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "NPCI switch timeout"
+    },
+    {
+      "txn_id": "TXN250016",
+      "status": "PENDING",
+      "utr": "UTR770000015",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250017",
+      "status": "PENDING",
+      "utr": "UTR770000016",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250018",
+      "status": "PENDING",
+      "utr": "UTR770000017",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250019",
+      "status": "PENDING",
+      "utr": "UTR770000018",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250020",
+      "status": "SETTLED",
+      "utr": "UTR770000019",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260020",
+      "status": "SETTLED",
+      "utr": "UTR770000019",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250021",
+      "status": "PENDING",
+      "utr": "UTR770000020",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250022",
+      "status": "SETTLED",
+      "utr": "UTR770000021",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260022",
+      "status": "SETTLED",
+      "utr": "UTR770000021",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250023",
+      "status": "PENDING",
+      "utr": "UTR770000022",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250024",
+      "status": "PENDING",
+      "utr": "UTR770000023",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250025",
+      "status": "PENDING",
+      "utr": "UTR770000024",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250026",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "NPCI switch timeout"
+    },
+    {
+      "txn_id": "TXN250027",
+      "status": "SETTLED",
+      "utr": "UTR770000026",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260027",
+      "status": "SETTLED",
+      "utr": "UTR770000026",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250028",
+      "status": "SETTLED",
+      "utr": "UTR770000027",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260028",
+      "status": "SETTLED",
+      "utr": "UTR770000027",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250029",
+      "status": "PENDING",
+      "utr": "UTR770000028",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250030",
+      "status": "PENDING",
+      "utr": "UTR770000029",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250031",
+      "status": "PENDING",
+      "utr": "UTR770000030",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250032",
+      "status": "PENDING",
+      "utr": "UTR770000031",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250033",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "NPCI switch timeout"
+    },
+    {
+      "txn_id": "TXN250034",
+      "status": "PENDING",
+      "utr": "UTR770000033",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250035",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "Account validation pending"
+    },
+    {
+      "txn_id": "TXN250036",
+      "status": "PENDING",
+      "utr": "UTR770000035",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250037",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "Account validation pending"
+    },
+    {
+      "txn_id": "TXN250038",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "NPCI switch timeout"
+    },
+    {
+      "txn_id": "TXN250039",
+      "status": "SETTLED",
+      "utr": "UTR770000038",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260039",
+      "status": "SETTLED",
+      "utr": "UTR770000038",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250040",
+      "status": "SETTLED",
+      "utr": "UTR770000039",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260040",
+      "status": "SETTLED",
+      "utr": "UTR770000039",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250041",
+      "status": "SETTLED",
+      "utr": "UTR770000040",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN260041",
+      "status": "SETTLED",
+      "utr": "UTR770000040",
+      "failure_reason": null
+    },
+    {
+      "txn_id": "TXN250042",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "Beneficiary bank timeout"
+    },
+    {
+      "txn_id": "TXN250043",
+      "status": "FAILED",
+      "utr": null,
+      "failure_reason": "Account validation pending"
+    },
+    {
+      "txn_id": "TXN250044",
+      "status": "PENDING",
+      "utr": "UTR770000043",
+      "failure_reason": null
+    }
+  ],
+  "bank": {
+    "UTR998877000": {
+      "status": "CREDITED",
+      "amount": 2400
+    },
+    "UTR998877001": {
+      "status": "CREDITED",
+      "amount": 3250
+    },
+    "UTR998877002": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR998877003": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000003": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000004": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000005": {
+      "status": "CREDITED",
+      "amount": 10400
+    },
+    "UTR770000006": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000007": {
+      "status": "CREDITED",
+      "amount": 1200
+    },
+    "UTR770000009": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000010": {
+      "status": "CREDITED",
+      "amount": 1200
+    },
+    "UTR770000012": {
+      "status": "CREDITED",
+      "amount": 150
+    },
+    "UTR770000013": {
+      "status": "CREDITED",
+      "amount": 17600
+    },
+    "UTR770000015": {
+      "status": "CREDITED",
+      "amount": 8800
+    },
+    "UTR770000016": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000017": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000018": {
+      "status": "CREDITED",
+      "amount": 8800
+    },
+    "UTR770000019": {
+      "status": "CREDITED",
+      "amount": 4900
+    },
+    "UTR770000020": {
+      "status": "CREDITED",
+      "amount": 380
+    },
+    "UTR770000021": {
+      "status": "CREDITED",
+      "amount": 300
+    },
+    "UTR770000022": {
+      "status": "CREDITED",
+      "amount": 5200
+    },
+    "UTR770000023": {
+      "status": "CREDITED",
+      "amount": 3600
+    },
+    "UTR770000024": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000026": {
+      "status": "CREDITED",
+      "amount": 7200
+    },
+    "UTR770000027": {
+      "status": "CREDITED",
+      "amount": 7200
+    },
+    "UTR770000028": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000029": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000030": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000031": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000033": {
+      "status": "CREDITED",
+      "amount": 5200
+    },
+    "UTR770000035": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    },
+    "UTR770000038": {
+      "status": "CREDITED",
+      "amount": 17600
+    },
+    "UTR770000039": {
+      "status": "CREDITED",
+      "amount": 10400
+    },
+    "UTR770000040": {
+      "status": "CREDITED",
+      "amount": 7200
+    },
+    "UTR770000043": {
+      "status": "NOT_FOUND",
+      "amount": 0
+    }
+  },
+  "credits": [
+    {
+      "credit_id": "CR-77001",
+      "merchant_id": "M1005",
+      "txn_id": "TXN240006",
+      "amount": 8000,
+      "days_ago": 2
+    },
+    {
+      "credit_id": "CR-78025",
+      "merchant_id": "M2025",
+      "txn_id": "TXN250025",
+      "amount": 999,
+      "days_ago": 2
+    },
+    {
+      "credit_id": "CR-78029",
+      "merchant_id": "M2029",
+      "txn_id": "TXN250029",
+      "amount": 3600,
+      "days_ago": 2
+    }
+  ],
+  "past_tickets": {
+    "M1004": 2,
+    "M1005": 3,
+    "M2025": 3,
+    "M2029": 3
+  },
+  "tickets": [
+    {
+      "ticket_id": "DEMO-1",
+      "merchant_id": "M1001",
+      "scenario": "settlement_failed",
+      "label": "Failed settlement",
+      "text": "Mera kal ka ₹4,500 ka settlement abhi tak nahi aaya. Txn id TXN240001 hai."
+    },
+    {
+      "ticket_id": "DEMO-2",
+      "merchant_id": "M1002",
+      "scenario": "duplicate_debit",
+      "label": "Duplicate debit",
+      "text": "Customer bol raha hai ₹1,200 do baar kat gaye aaj, TXN240003. Please check karo."
+    },
+    {
+      "ticket_id": "DEMO-3",
+      "merchant_id": "M1003",
+      "scenario": "pending_credited",
+      "label": "Pending but credited",
+      "text": "TXN240004 ka settlement pending dikh raha hai, kab aayega?"
+    },
+    {
+      "ticket_id": "DEMO-4",
+      "merchant_id": "M1004",
+      "scenario": "tat_breach_large",
+      "label": "₹25,000 stuck 7 days",
+      "text": "7 din ho gaye, ₹25,000 ka settlement nahi aaya. TXN240005. Bahut problem ho rahi hai."
+    },
+    {
+      "ticket_id": "DEMO-5",
+      "merchant_id": "M1005",
+      "scenario": "repeat_claim",
+      "label": "Repeat credit claim",
+      "text": "Mera ₹8,000 abhi tak nahi aaya TXN240006, turant credit karo."
+    },
+    {
+      "ticket_id": "DEMO-6",
+      "merchant_id": "M1001",
+      "scenario": "no_txn_id",
+      "label": "No txn id given",
+      "text": "Kal dopahar 2 baje ₹4,500 ka payment aaya tha, uska paisa account me nahi aaya."
+    },
+    {
+      "ticket_id": "BATCH-01",
+      "merchant_id": "M2001",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Settlement nahi aaya ₹5,200 ka, txn TXN250001. Kya hua?"
+    },
+    {
+      "ticket_id": "BATCH-02",
+      "merchant_id": "M2002",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Settlement nahi aaya ₹380 ka, txn TXN250002. Kya hua?"
+    },
+    {
+      "ticket_id": "BATCH-03",
+      "merchant_id": "M2003",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Mera ₹1,200 ka settlement fail ho gaya lagta hai, txn TXN250003."
+    },
+    {
+      "ticket_id": "BATCH-04",
+      "merchant_id": "M2004",
+      "scenario": "tat_breach_small",
+      "label": "tat breach small",
+      "text": "Bahut din ho gaye ₹1,800 nahi aaya. txn TXN250004."
+    },
+    {
+      "ticket_id": "BATCH-05",
+      "merchant_id": "M2005",
+      "scenario": "tat_breach_large",
+      "label": "tat breach large",
+      "text": "10 din ho gaye, ₹30,000 ka settlement nahi aaya, txn TXN250005. Urgent hai."
+    },
+    {
+      "ticket_id": "BATCH-06",
+      "merchant_id": "M2006",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Ek hi payment do baar debit hua ₹5,200, txn TXN260006. Refund karo."
+    },
+    {
+      "ticket_id": "BATCH-07",
+      "merchant_id": "M2007",
+      "scenario": "tat_breach_small",
+      "label": "tat breach small",
+      "text": "Bahut din ho gaye ₹2,500 nahi aaya. txn TXN250007."
+    },
+    {
+      "ticket_id": "BATCH-08",
+      "merchant_id": "M2008",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "txn TXN250008 ka ₹1,200 pending dikh raha hai, kab aayega?"
+    },
+    {
+      "ticket_id": "BATCH-09",
+      "merchant_id": "M2009",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Mera ₹380 ka settlement fail ho gaya lagta hai, txn TXN250009."
+    },
+    {
+      "ticket_id": "BATCH-10",
+      "merchant_id": "M2010",
+      "scenario": "tat_breach_small",
+      "label": "tat breach small",
+      "text": "Bahut din ho gaye ₹1,800 nahi aaya. txn TXN250010."
+    },
+    {
+      "ticket_id": "BATCH-11",
+      "merchant_id": "M2011",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "txn TXN250011 ka ₹1,200 pending dikh raha hai, kab aayega?"
+    },
+    {
+      "ticket_id": "BATCH-12",
+      "merchant_id": "M2012",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Settlement nahi aaya ₹1,200 ka, txn TXN250012. Kya hua?"
+    },
+    {
+      "ticket_id": "BATCH-13",
+      "merchant_id": "M2013",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "Mera settlement kab aayega? ₹150, txn TXN250013."
+    },
+    {
+      "ticket_id": "BATCH-14",
+      "merchant_id": "M2014",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Ek hi payment do baar debit hua ₹8,800, txn TXN260014. Refund karo."
+    },
+    {
+      "ticket_id": "BATCH-15",
+      "merchant_id": "M2015",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Settlement nahi aaya ₹999 ka, txn TXN250015. Kya hua?"
+    },
+    {
+      "ticket_id": "BATCH-16",
+      "merchant_id": "M2016",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "txn TXN250016 ka ₹8,800 pending dikh raha hai, kab aayega?"
+    },
+    {
+      "ticket_id": "BATCH-17",
+      "merchant_id": "M2017",
+      "scenario": "tat_breach_small",
+      "label": "tat breach small",
+      "text": "7 din se ₹7,300 atka hua hai, txn TXN250017."
+    },
+    {
+      "ticket_id": "BATCH-18",
+      "merchant_id": "M2018",
+      "scenario": "tat_breach_large",
+      "label": "tat breach large",
+      "text": "Itna bada amount ₹30,000 10 din se atka hai, 10 din pehle 18:15 baje ka payment."
+    },
+    {
+      "ticket_id": "BATCH-19",
+      "merchant_id": "M2019",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "2 din pehle 11:30 baje ka payment ka ₹8,800 pending dikh raha hai, kab aayega?"
+    },
+    {
+      "ticket_id": "BATCH-20",
+      "merchant_id": "M2020",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Ek hi payment do baar debit hua ₹2,450, txn TXN260020. Refund karo."
+    },
+    {
+      "ticket_id": "BATCH-21",
+      "merchant_id": "M2021",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "Mera settlement kab aayega? ₹380, txn TXN250021."
+    },
+    {
+      "ticket_id": "BATCH-22",
+      "merchant_id": "M2022",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Ek hi payment do baar debit hua ₹150, txn TXN260022. Refund karo."
+    },
+    {
+      "ticket_id": "BATCH-23",
+      "merchant_id": "M2023",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "2 din pehle 20:45 baje ka payment ka ₹5,200 pending dikh raha hai, kab aayega?"
+    },
+    {
+      "ticket_id": "BATCH-24",
+      "merchant_id": "M2024",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "txn TXN250024 ka ₹3,600 pending dikh raha hai, kab aayega?"
+    },
+    {
+      "ticket_id": "BATCH-25",
+      "merchant_id": "M2025",
+      "scenario": "repeat_claim",
+      "label": "repeat claim",
+      "text": "Mujhe ₹999 ka credit chahiye abhi, txn TXN250025."
+    },
+    {
+      "ticket_id": "BATCH-26",
+      "merchant_id": "M2026",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Mera ₹1,200 ka settlement fail ho gaya lagta hai, txn TXN250026."
+    },
+    {
+      "ticket_id": "BATCH-27",
+      "merchant_id": "M2027",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Ek hi payment do baar debit hua ₹3,600, txn TXN260027. Refund karo."
+    },
+    {
+      "ticket_id": "BATCH-28",
+      "merchant_id": "M2028",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Customer ka ₹3,600 do baar kat gaya, txn TXN260028."
+    },
+    {
+      "ticket_id": "BATCH-29",
+      "merchant_id": "M2029",
+      "scenario": "repeat_claim",
+      "label": "repeat claim",
+      "text": "Mujhe ₹3,600 ka credit chahiye abhi, txn TXN250029."
+    },
+    {
+      "ticket_id": "BATCH-30",
+      "merchant_id": "M2030",
+      "scenario": "tat_breach_small",
+      "label": "tat breach small",
+      "text": "9 din se ₹2,500 atka hua hai, txn TXN250030."
+    },
+    {
+      "ticket_id": "BATCH-31",
+      "merchant_id": "M2031",
+      "scenario": "tat_breach_small",
+      "label": "tat breach small",
+      "text": "Bahut din ho gaye ₹7,300 nahi aaya. txn TXN250031."
+    },
+    {
+      "ticket_id": "BATCH-32",
+      "merchant_id": "M2032",
+      "scenario": "tat_breach_large",
+      "label": "tat breach large",
+      "text": "Itna bada amount ₹15,500 8 din se atka hai, txn TXN250032."
+    },
+    {
+      "ticket_id": "BATCH-33",
+      "merchant_id": "M2033",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Mera ₹8,800 ka settlement fail ho gaya lagta hai, txn TXN250033."
+    },
+    {
+      "ticket_id": "BATCH-34",
+      "merchant_id": "M2034",
+      "scenario": "pending_credited",
+      "label": "pending credited",
+      "text": "Mera settlement kab aayega? ₹5,200, txn TXN250034."
+    },
+    {
+      "ticket_id": "BATCH-35",
+      "merchant_id": "M2035",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Settlement nahi aaya ₹3,600 ka, txn TXN250035. Kya hua?"
+    },
+    {
+      "ticket_id": "BATCH-36",
+      "merchant_id": "M2036",
+      "scenario": "tat_breach_small",
+      "label": "tat breach small",
+      "text": "9 din se ₹2,500 atka hua hai, txn TXN250036."
+    },
+    {
+      "ticket_id": "BATCH-37",
+      "merchant_id": "M2037",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Settlement nahi aaya ₹1,200 ka, txn TXN250037. Kya hua?"
+    },
+    {
+      "ticket_id": "BATCH-38",
+      "merchant_id": "M2038",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Settlement nahi aaya ₹5,200 ka, txn TXN250038. Kya hua?"
+    },
+    {
+      "ticket_id": "BATCH-39",
+      "merchant_id": "M2039",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Ek hi payment do baar debit hua ₹8,800, txn TXN260039. Refund karo."
+    },
+    {
+      "ticket_id": "BATCH-40",
+      "merchant_id": "M2040",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Ek hi payment do baar debit hua ₹5,200, txn TXN260040. Refund karo."
+    },
+    {
+      "ticket_id": "BATCH-41",
+      "merchant_id": "M2041",
+      "scenario": "duplicate_debit",
+      "label": "duplicate debit",
+      "text": "Ek hi payment do baar debit hua ₹3,600, txn TXN260041. Refund karo."
+    },
+    {
+      "ticket_id": "BATCH-42",
+      "merchant_id": "M2042",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Mera ₹150 ka settlement fail ho gaya lagta hai, txn TXN250042."
+    },
+    {
+      "ticket_id": "BATCH-43",
+      "merchant_id": "M2043",
+      "scenario": "settlement_failed",
+      "label": "settlement failed",
+      "text": "Mera ₹3,600 ka settlement fail ho gaya lagta hai, txn TXN250043."
+    },
+    {
+      "ticket_id": "BATCH-44",
+      "merchant_id": "M2044",
+      "scenario": "tat_breach_large",
+      "label": "tat breach large",
+      "text": "Itna bada amount ₹12,000 6 din se atka hai, txn TXN250044."
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+:root {
+  --sr-edge: #cbd5e1;
+  --sr-node: #ffffff;
+  --sr-node-stroke: #cbd5e1;
+  --sr-text: #1e293b;
+  --sr-sub: #64748b;
+  --sr-active: #206bc4;
+  --sr-ok: #2fb344;
+  --sr-warn: #f59f00;
+  --sr-bad: #d63939;
+  --sr-chat-agent: #f1f5f9;
+}
+[data-bs-theme="dark"] {
+  --sr-edge: #334155;
+  --sr-node: #1e293b;
+  --sr-node-stroke: #475569;
+  --sr-text: #e2e8f0;
+  --sr-sub: #94a3b8;
+  --sr-chat-agent: #1e293b;
+}
+
+.brand-mark { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 8px;
+  background: var(--sr-active); color: #fff; font-size: 20px; }
+
+/* System map */
+#map { width: 100%; height: auto; display: block; }
+#map .edge { fill: none; stroke: var(--sr-edge); stroke-width: 2; }
+#map .edge-live { fill: none; stroke-width: 3; stroke-linecap: round; }
+#map .node rect, #map .node circle { fill: var(--sr-node); stroke: var(--sr-node-stroke); stroke-width: 1.5;
+  transition: stroke .25s, fill .25s; }
+#map .node { transform-box: fill-box; transform-origin: center; }
+#map .node text { fill: var(--sr-text); font-size: 14px; font-weight: 600; text-anchor: middle; }
+#map .node text.sub { fill: var(--sr-sub); font-size: 11px; font-weight: 400; }
+#map .hub circle { stroke: var(--sr-active); stroke-width: 2.5; }
+#map .node.is-active rect, #map .node.is-active circle { stroke: var(--sr-active); stroke-width: 3; }
+#map .node.is-ok rect { stroke: var(--sr-ok); stroke-width: 3; }
+#map .node.is-warn rect { stroke: var(--sr-warn); stroke-width: 3; }
+#map .node.is-bad rect { stroke: var(--sr-bad); stroke-width: 3; }
+#map .packet { fill: var(--sr-active); }
+#map .shield path { fill: var(--sr-node); stroke: var(--sr-sub); stroke-width: 1.5; transition: fill .2s, stroke .2s; }
+#map .shield text { fill: var(--sr-sub); font-size: 11px; font-weight: 700; text-anchor: middle; }
+#map .shield.ok path { fill: var(--sr-ok); stroke: var(--sr-ok); }
+#map .shield.warn path { fill: var(--sr-warn); stroke: var(--sr-warn); }
+#map .shield.bad path { fill: var(--sr-bad); stroke: var(--sr-bad); }
+#map .shield.ok text, #map .shield.warn text, #map .shield.bad text { fill: #fff; }
+#map .shield { transform-box: fill-box; transform-origin: center; }
+
+/* Trace */
+.trace { max-height: 260px; overflow-y: auto; font-size: 13px; }
+.trace li { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--tblr-border-color); }
+.trace li .ti { font-size: 16px; margin-top: 1px; }
+.trace .reasoning { color: var(--sr-sub); font-style: italic; }
+.trace code { font-size: 12px; }
+
+/* Chat */
+.chat-box { flex: 1; min-height: 260px; max-height: 380px; overflow-y: auto; display: flex; flex-direction: column;
+  gap: 8px; padding: 4px; }
+.bubble { max-width: 88%; padding: 8px 12px; border-radius: 12px; font-size: 14px; line-height: 1.4; }
+.bubble.merchant { align-self: flex-end; background: var(--sr-active); color: #fff; border-bottom-right-radius: 4px; }
+.bubble.agent { align-self: flex-start; background: var(--sr-chat-agent); border-bottom-left-radius: 4px; }
+.bubble .meta { display: block; font-size: 11px; opacity: .7; margin-top: 4px; }
+#btn-mic.recording { background: var(--sr-bad); border-color: var(--sr-bad); color: #fff; }
+#btn-mic { touch-action: none; }
+#mic-status.listening { color: var(--sr-bad); font-weight: 600; }
+#mic-status.hint { color: var(--sr-warn); }
+#mic-status .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--sr-bad);
+  margin-right: 6px; vertical-align: middle; }
+
+/* Approvals */
+.approval { border: 1px solid var(--sr-warn); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+.approval:last-child { margin-bottom: 0; }
+
+/* Batch grid */
+.batch-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 8px; }
+.tile { aspect-ratio: 1; border-radius: 4px; background: var(--sr-edge); }
+.tile.running { background: var(--sr-active); }
+.tile.ok, .legend.ok { background: var(--sr-ok); }
+.tile.warn, .legend.warn { background: var(--sr-warn); }
+.tile.bad, .legend.bad { background: var(--sr-bad); }
+.legend { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+
+.audit-wrap { max-height: 420px; overflow-y: auto; }
+.audit-wrap td { font-size: 12px; white-space: nowrap; }
+.audit-wrap td.reason { min-width: 260px; white-space: normal; }
+
+/* Customers page */
+.cust-list { max-height: calc(100vh - 220px); overflow-y: auto; }
+.cust-row.active { background: color-mix(in srgb, var(--sr-active) 10%, transparent); }
+.health-pill { display: inline-grid; place-items: center; min-width: 38px; height: 26px; border-radius: 13px;
+  font-weight: 700; font-size: 13px; color: var(--c); border: 2px solid var(--c); }
+.gauge { width: 130px; height: 130px; flex: none; }
+.gauge-track { fill: none; stroke: var(--sr-edge); stroke-width: 12; }
+.gauge-value { fill: none; stroke-width: 12; stroke-linecap: round; }
+.gauge-num { fill: var(--sr-text); font-size: 30px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+.gauge-label { fill: var(--sr-sub); font-size: 12px; text-anchor: middle; }
+.scroll-list { max-height: 320px; overflow-y: auto; }
+.transcript { display: flex; flex-direction: column; gap: 8px; max-height: 520px; overflow-y: auto; }
+.transcript audio { display: block; width: 100%; max-width: 280px; height: 32px; margin-top: 6px; }
+.transcript .facts { margin-top: 4px; }
+
+/* Detailed log */
+.debug-block { margin-bottom: 14px; }
+.debug-block:last-child { margin-bottom: 0; }
+.debug-block table { font-size: 12px; font-family: var(--tblr-font-monospace); }
+.debug-block td { padding: 2px 8px; white-space: nowrap; vertical-align: top; }
+.debug-block td.detail { white-space: normal; color: var(--sr-sub); }
+.debug-block tr.browser td.step { color: var(--sr-active); }
+.debug-block .slow { color: var(--sr-warn); font-weight: 700; }
+.debug-block .very-slow { color: var(--sr-bad); font-weight: 700; }
+#debug-log { max-height: 520px; overflow-y: auto; }
+
+@media (max-width: 576px) {
+  .batch-grid { grid-template-columns: repeat(5, 1fr); }
+}

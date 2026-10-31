@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer Health</title>
+  <script>
+    if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.dataset.bsTheme = 'dark';
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/css/tabler.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="page">
+  <header class="navbar navbar-expand-md d-print-none">
+    <div class="container-xl">
+      <div class="navbar-brand d-flex align-items-center gap-2">
+        <span class="brand-mark"><i class="ti ti-shield-check"></i></span>
+        <span>SettlementResolver</span>
+        <span class="text-secondary fw-normal">/ Customers</span>
+      </div>
+      <a href="/" class="btn btn-outline-secondary ms-auto"><i class="ti ti-layout-dashboard me-1"></i>Agent dashboard</a>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="row row-cards">
+
+          <!-- Customer list -->
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i class="ti ti-users me-2"></i>Customers</h3>
+                <div class="card-actions small text-secondary" id="list-count"></div>
+              </div>
+              <div class="card-body pb-2">
+                <input id="search" class="form-control" placeholder="Search shop, city or id" autocomplete="off">
+              </div>
+              <div class="list-group list-group-flush cust-list" id="customer-list"></div>
+            </div>
+          </div>
+
+          <!-- Detail -->
+          <div class="col-lg-8" id="detail">
+            <div class="card"><div class="card-body text-secondary">Pick a customer to see how they are doing.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/js/tabler.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"></script>
+<script src="/static/customers.js"></script>
+</body>
+</html>
