@@ -2010,5 +2010,51 @@
       "label": "tat breach large",
       "text": "Itna bada amount ₹12,000 6 din se atka hai, txn TXN250044."
     }
+  ],
+  "invoices": [
+    {
+      "invoice_id": "INV-1001",
+      "creditor_id": "M1001",
+      "debtor_id": "M1002",
+      "debtor_phone": "+91 98290 11223",
+      "description": "Wholesale FMCG cartons (October)",
+      "amount": 12000,
+      "issued_days_ago": 27,
+      "due_in_days": -12,
+      "max_instalments": 2
+    },
+    {
+      "invoice_id": "INV-1002",
+      "creditor_id": "M1001",
+      "debtor_id": "M1003",
+      "debtor_phone": "+91 98490 33441",
+      "description": "Rice and oil bulk order",
+      "amount": 3500,
+      "issued_days_ago": 20,
+      "due_in_days": -5,
+      "max_instalments": 1
+    },
+    {
+      "invoice_id": "INV-1003",
+      "creditor_id": "M1001",
+      "debtor_id": "M1005",
+      "debtor_phone": "+91 99250 77801",
+      "description": "Packaging material",
+      "amount": 18000,
+      "issued_days_ago": 45,
+      "due_in_days": -30,
+      "max_instalments": 2
+    },
+    {
+      "invoice_id": "INV-1004",
+      "creditor_id": "M1001",
+      "debtor_id": "M1004",
+      "debtor_phone": "+91 98220 55190",
+      "description": "Office supplies",
+      "amount": 7200,
+      "issued_days_ago": 13,
+      "due_in_days": 2,
+      "max_instalments": 1
+    }
   ]
 }

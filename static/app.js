@@ -229,6 +229,8 @@ function updateKpis(m) {
     const counter = { v: from };
     animate(counter, { v: to, duration: ms(700), ease: 'outExpo', onUpdate: () => { el.textContent = fmt(counter.v); },
       onComplete: () => { el.textContent = fmt(to); } });
+    // Animations pause while the page is in the background; make sure the real number still shows
+    setTimeout(() => { if (kpiValues[key] === to) el.textContent = fmt(to); }, 900);
   });
 }
 
@@ -316,7 +318,10 @@ function scheduleAudit() { clearTimeout(auditTimer); auditTimer = setTimeout(ref
 function bubble(who, text, meta = '') {
   const el = document.createElement('div');
   el.className = `bubble ${who}`;
-  el.innerHTML = `${esc(text)}${meta ? `<span class="meta">${esc(meta)}</span>` : ''}`;
+  // Links in replies (e.g. payment links); a sentence's full stop or comma is not part of the URL
+  const linked = esc(text).replace(/(https?:\/\/[^\s<]+?)([.,;:!?)]*)(?=\s|$)/g,
+    '<a href="$1" target="_blank" rel="noopener">$1</a>$2');
+  el.innerHTML = `${linked}${meta ? `<span class="meta">${esc(meta)}</span>` : ''}`;
   $('#chat').appendChild(el);
   $('#chat').scrollTop = $('#chat').scrollHeight;
   animate(el, { opacity: [0, 1], y: [10, 0], duration: ms(250), ease: 'outQuad' });
@@ -386,7 +391,55 @@ function newConversation() {
   animate('.chat-note', { opacity: [0, 1], y: [-6, 0], duration: ms(250) });
 }
 
-$('#btn-new-conv').addEventListener('click', newConversation);
+$('#btn-new-conv').addEventListener('click', () => { if (callInvoice) endCall(); newConversation(); });
+
+// ---------- collections call: merchant A's AI calls merchant B (you play merchant B) ----------
+let callInvoice = null;
+
+function updateCallBanner(inv) {
+  const status = { OPEN: 'open', PROMISED: `promised ₹${inr(inv.promise_amount)} by ${inv.promise_date}`,
+    PAID: 'PAID ✓', DISPUTED: 'disputed, handed to merchant A' }[inv.status] || inv.status;
+  $('#call-banner').innerHTML = `
+    <div class="d-flex align-items-center gap-2">
+      <span><span class="live-dot"></span><b>AI call</b> for ${esc(inv.creditor)} → ${esc(inv.debtor)}</span>
+      <button class="btn btn-sm btn-outline-danger ms-auto" id="btn-end-call"><i class="ti ti-phone-off me-1"></i>End call</button>
+    </div>
+    <div class="small text-secondary">You are <b>${esc(inv.debtor)}</b> · ${esc(inv.invoice_id)} · ₹${inr(inv.outstanding)} outstanding · <b>${esc(status)}</b></div>`;
+  $('#btn-end-call').addEventListener('click', endCall);
+}
+
+async function startCall(invoiceId) {
+  newConversation();
+  const res = await fetch(`/api/collections/${invoiceId}/call`, { method: 'POST' });
+  const data = await res.json();
+  if (!res.ok) { bubble('agent', `Can't start the call: ${data.detail}`); return; }
+  callInvoice = invoiceId;
+  setConversation(data.conversation_id);
+  $('#call-banner').hidden = false;
+  updateCallBanner(data.invoice);
+  $('#merchant').disabled = true;
+  document.querySelectorAll('[data-scenario]').forEach((b) => { b.disabled = true; });
+  animate('#call-banner', { opacity: [0, 1], y: [-8, 0], duration: ms(300) });
+  const greet = bubble('agent', data.greeting, `${data.invoice.creditor}'s AI · call started`);
+  addPlayButton(greet, data.agent_audio_url, 'replay AI');
+  noteRecorded(data);
+  playAudio(data.audio_b64);
+  addTrace('ti-phone-call', `AI calling <b>${esc(data.invoice.debtor)}</b> for ${esc(data.invoice.creditor)} about ${esc(invoiceId)}`);
+}
+
+function endCall() {
+  if (!callInvoice) return;
+  addTrace('ti-phone-off', `Call about ${esc(callInvoice)} ended`);
+  callInvoice = null;
+  $('#call-banner').hidden = true;
+  $('#merchant').disabled = false;
+  document.querySelectorAll('[data-scenario]').forEach((b) => { b.disabled = false; });
+  const note = document.createElement('div');
+  note.className = 'chat-note';
+  note.innerHTML = '<i class="ti ti-phone-off me-1"></i>Call ended. Transcript and full recording are on the Customers page.';
+  $('#chat').appendChild(note);
+  setConversation(null);
+}
 
 // ---------- full call recording (you + AI, one file) ----------
 let recordedTurns = 0;
@@ -423,9 +476,12 @@ async function sendTicket(text, ticketId) {
   bubble('merchant', text);
   const typing = bubble('agent', '…');
   tl.mark('request sent');
-  const res = await fetch('/api/tickets', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ merchant_id, text, ticket_id: ticketId, speak: $('#speak').checked,
-      conversation_id: conversationId }) });
+  const res = callInvoice
+    ? await fetch(`/api/collections/${callInvoice}/turn`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, conversation_id: conversationId }) })
+    : await fetch('/api/tickets', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ merchant_id, text, ticket_id: ticketId, speak: $('#speak').checked,
+        conversation_id: conversationId }) });
   const data = await res.json();
   tl.mark('response received', `round trip`, performance.now() - tl.t0 - tl.at('request sent'));
   typing.remove();
@@ -442,6 +498,7 @@ async function sendTicket(text, ticketId) {
   const reply = bubble('agent', data.reply, `${data.ticket_id} · ${data.status.replace('_', ' ').toLowerCase()} · ${data.steps} steps`);
   addPlayButton(reply, data.agent_audio_url, 'replay AI');
   noteRecorded(data);
+  if (data.invoice) updateCallBanner(data.invoice);
   tl.mark('reply shown');
   finishClientTimeline(tl, data.ticket_id, data.timing);
   playAudio(data.audio_b64, tl);
@@ -560,6 +617,7 @@ async function onRecordingStopped(tl) {
     const form = new FormData();
     form.append('merchant_id', $('#merchant').value);
     if (conversationId) form.append('conversation_id', conversationId);
+    if (callInvoice) form.append('invoice_id', callInvoice);
     form.append('audio', blob, 'audio.webm');
     tl.mark('request sent', `uploading ${Math.round(blob.size / 1024)} KB`);
     const res = await fetch('/api/voice', { method: 'POST', body: form });
@@ -584,6 +642,7 @@ async function onRecordingStopped(tl) {
     const reply = bubble('agent', data.reply, `${data.ticket_id} · ${data.status.replace('_', ' ').toLowerCase()}`);
     addPlayButton(reply, data.agent_audio_url, 'replay AI');
     noteRecorded(data);
+    if (data.invoice) updateCallBanner(data.invoice);
     tl.mark('transcript + reply shown');
     finishClientTimeline(tl, data.ticket_id, data.timing);
     playAudio(data.audio_b64, tl);
@@ -744,6 +803,20 @@ const HANDLERS = {
 
   stt(e) { addTrace('ti-microphone', esc(e.detail)); },
 
+  invoice_paid(e) {
+    addTrace('ti-cash text-success', `<b>₹${inr(e.amount)}</b> received from ${esc(e.invoice.debtor)} for ${esc(e.invoice.invoice_id)} via UPI link`);
+    sendPacket('edge-payments', COLORS.ok, true);
+    setNodeState('payments', 'ok');
+    if (callInvoice === e.invoice.invoice_id) {
+      updateCallBanner(e.invoice);
+      const note = document.createElement('div');
+      note.className = 'chat-note';
+      note.innerHTML = `<i class="ti ti-cash me-1"></i>Payment received: ₹${inr(e.amount)}`;
+      $('#chat').appendChild(note);
+      animate(note, { scale: [0.8, 1], opacity: [0, 1], duration: ms(400), ease: 'outBack' });
+    }
+  },
+
   // Live server steps while a request is still running
   timing_step(e) {
     if (!debugLog.enabled) return;
@@ -811,6 +884,13 @@ async function init() {
 
   refreshAudit();
   connect();
+
+  // Opened from the Collections page: /?call=INV-1001 starts the AI call (you play merchant B)
+  const callParam = new URLSearchParams(location.search).get('call');
+  if (callParam) {
+    history.replaceState(null, '', '/');
+    startCall(callParam);
+  }
 }
 
 init();

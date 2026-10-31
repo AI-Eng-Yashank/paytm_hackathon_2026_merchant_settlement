@@ -91,8 +91,24 @@ def demo_scenarios() -> dict:
         {"ticket_id": "DEMO-6", "merchant_id": "M1001", "scenario": "no_txn_id",
          "label": "No txn id given", "text": "Kal dopahar 2 baje ₹4,500 ka payment aaya tha, uska paisa account me nahi aaya."},
     ]
+    # Collections: Sharma General Store (A) supplies other shops on credit; each invoice is one demo path
+    invoices = [
+        {"invoice_id": "INV-1001", "creditor_id": "M1001", "debtor_id": "M1002", "debtor_phone": "+91 98290 11223",
+         "description": "Wholesale FMCG cartons (October)", "amount": 12000, "issued_days_ago": 27,
+         "due_in_days": -12, "max_instalments": 2},     # reliable payer: pays via link on the call
+        {"invoice_id": "INV-1002", "creditor_id": "M1001", "debtor_id": "M1003", "debtor_phone": "+91 98490 33441",
+         "description": "Rice and oil bulk order", "amount": 3500, "issued_days_ago": 20,
+         "due_in_days": -5, "max_instalments": 1},      # can't pay today: promise to pay
+        {"invoice_id": "INV-1003", "creditor_id": "M1001", "debtor_id": "M1005", "debtor_phone": "+91 99250 77801",
+         "description": "Packaging material", "amount": 18000, "issued_days_ago": 45,
+         "due_in_days": -30, "max_instalments": 2},     # disputes the goods: hand back to A
+        {"invoice_id": "INV-1004", "creditor_id": "M1001", "debtor_id": "M1004", "debtor_phone": "+91 98220 55190",
+         "description": "Office supplies", "amount": 7200, "issued_days_ago": 13,
+         "due_in_days": 2, "max_instalments": 1},       # not due yet: friendly reminder message
+    ]
     return {"merchants": merchants, "transactions": txns, "settlements": settlements,
-            "bank": bank, "credits": credits, "past_tickets": past_tickets, "tickets": tickets}
+            "bank": bank, "credits": credits, "past_tickets": past_tickets, "tickets": tickets,
+            "invoices": invoices}
 
 
 TEMPLATES = {
@@ -122,7 +138,7 @@ def generated(n_tickets: int = 44, seed: int = 42) -> dict:
     rng = random.Random(seed)
 
     data = {"merchants": [], "transactions": [], "settlements": [], "bank": {},
-            "credits": [], "past_tickets": {}, "tickets": []}
+            "credits": [], "past_tickets": {}, "tickets": [], "invoices": []}
     scenarios = [s for s, share in MIX for _ in range(round(share * n_tickets))][:n_tickets]
     rng.shuffle(scenarios)
 

@@ -25,17 +25,20 @@ def _rows(result) -> list[dict]:
 class ConversationStore:
     """Synchronous; call from a worker thread (asyncio.to_thread)."""
 
-    def get_or_start(self, merchant_id: str, conversation_id: str | None, channel: str) -> str:
-        """Continue the given conversation if it is this merchant's and still active, else start one."""
+    def get_or_start(self, merchant_id: str, conversation_id: str | None, channel: str,
+                     topic: str | None = None) -> str:
+        """Continue the given conversation if it is this merchant's, on the same topic and still active,
+        else start one. topic separates e.g. a collections call from the merchant's own support chat."""
         now = time.time()
         with db.use() as c:
             if conversation_id:
                 row = c.execute(select(C).where(C.c.conversation_id == conversation_id)).first()
-                if row and row.merchant_id == merchant_id and now - row.updated_at < CONVERSATION_IDLE_S:
+                if (row and row.merchant_id == merchant_id and row.topic == topic
+                        and now - row.updated_at < CONVERSATION_IDLE_S):
                     return conversation_id
             new_id = f"C-{secrets.token_hex(3).upper()}"
             c.execute(insert(C).values(conversation_id=new_id, merchant_id=merchant_id, channel=channel,
-                                       status="OPEN", created_at=now, updated_at=now))
+                                       status="OPEN", created_at=now, updated_at=now, topic=topic))
             return new_id
 
     def add_message(self, conversation_id: str, role: str, content: str, *, ticket_id: str | None = None,

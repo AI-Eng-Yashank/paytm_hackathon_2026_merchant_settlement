@@ -108,3 +108,17 @@ def test_demo_scenarios_pass_fact_check_first_time(client):
         checks = [a["decision"] for a in client.get("/api/audit", params={"ticket_id": r["ticket_id"]}).json()
                   if a["event"] == "fact_check"]
         assert checks == ["PASS"], (t["ticket_id"], r["reply"])
+
+
+def test_payment_link_amount_must_match_the_link():
+    # Seen live: the AI created a ₹12,000 link but told the merchant it was ₹6,000
+    evidence = ('{"min_instalment": 6000, "outstanding": 12000} '
+                '{"link_id": "PAY-B55395", "amount": 12000, "payment_link": "http://x/pay/PAY-B55395"}')
+    bad = factcheck.check("Maine aapko Rs 6000 ka payment link bhej diya hai. Link ID PAY-B55395.", evidence, "")
+    assert not bad.ok and "PAY-B55395" in bad.issues[0] and "12,000" in bad.issues[0]
+    assert factcheck.check("Rs 12000 ka link bhej diya hai: PAY-B55395.", evidence, "").ok
+
+
+def test_currency_word_without_number_does_not_crash():
+    # Seen live: "Rs," in a reply crashed the check (empty amount)
+    assert check("Aapka Rs, payment link bhej diya hai.", evidence="{}").ok

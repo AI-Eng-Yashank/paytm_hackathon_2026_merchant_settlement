@@ -186,7 +186,8 @@ class AuditStore:
         t = db.tickets
         with db.use() as c:
             rows = _rows(c.execute(select(t.c.status, t.c.human_involved, t.c.recovered_amount, t.c.duration_ms,
-                                          t.c.steps).where(t.c.status != "IN_PROGRESS")))
+                                          t.c.steps).where(t.c.status != "IN_PROGRESS",
+                                                           t.c.ticket_id.not_like("COL-%"))))
         auto = [r for r in rows if r["status"] == "RESOLVED" and not r["human_involved"]]
         durations = [r["duration_ms"] for r in auto if r["duration_ms"]]
         return {

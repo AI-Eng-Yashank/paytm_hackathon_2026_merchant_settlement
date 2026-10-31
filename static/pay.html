@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UPI Payment</title>
+  <script>
+    if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.dataset.bsTheme = 'dark';
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/css/tabler.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="page page-center">
+  <div class="container container-tight py-4">
+    <div class="card card-md pay-card">
+      <div class="card-body text-center" id="pay">
+        <div class="text-secondary">Loading payment link…</div>
+      </div>
+    </div>
+    <div class="text-center text-secondary small mt-2">Demo payment page: no real money moves.</div>
+  </div>
+</div>
+<!-- async: the payment loads even if the animation library is slow (merchant B may be on a phone network) -->
+<script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js" async></script>
+<script>
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const inr = (n) => Number(n || 0).toLocaleString('en-IN');
+  const linkId = location.pathname.split('/').pop();
+
+  function done(amount, to, already) {
+    $('#pay').innerHTML = `
+      <svg viewBox="0 0 80 80" width="88" height="88" class="mb-2" aria-hidden="true">
+        <circle cx="40" cy="40" r="36" fill="none" stroke="#2fb344" stroke-width="5" class="pay-ring"/>
+        <path d="M24 41 L35 52 L57 29" fill="none" stroke="#2fb344" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" class="pay-tick"/>
+      </svg>
+      <h2 class="mb-1">${already ? 'Already paid' : 'Payment successful'}</h2>
+      <div class="text-secondary">₹${inr(amount)} paid to ${esc(to)}</div>`;
+    if (!window.anime || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const { animate, svg } = window.anime;
+    const [ring] = svg.createDrawable('.pay-ring');
+    const [tick] = svg.createDrawable('.pay-tick');
+    animate(ring, { draw: ['0 0', '0 1'], duration: 600, ease: 'inOutQuad' });
+    animate(tick, { draw: ['0 0', '0 1'], duration: 400, delay: 450, ease: 'outQuad' });
+  }
+
+  (async () => {
+    const r = await fetch(`/api/pay/${linkId}`);
+    if (!r.ok) { $('#pay').innerHTML = '<h3>Payment link not found</h3>'; return; }
+    const { link, invoice } = await r.json();
+    if (link.status === 'PAID') { done(link.amount, invoice.creditor, true); return; }
+    $('#pay').innerHTML = `
+      <div class="text-secondary small mb-1"><i class="ti ti-qrcode me-1"></i>UPI payment request</div>
+      <div class="display-6 fw-bold mb-1">₹${inr(link.amount)}</div>
+      <div class="mb-3">to <b>${esc(invoice.creditor)}</b></div>
+      <div class="text-secondary small mb-3">${esc(invoice.invoice_id)} · ${esc(invoice.description)}<br>
+        ${link.amount < invoice.outstanding ? `Instalment of ₹${inr(invoice.outstanding)} outstanding` : `Full outstanding amount`}</div>
+      <button class="btn btn-primary w-100 btn-lg" id="pay-btn"><i class="ti ti-shield-lock me-1"></i>Pay with UPI (demo)</button>`;
+    $('#pay-btn').addEventListener('click', async () => {
+      $('#pay-btn').disabled = true;
+      $('#pay-btn').innerHTML = '<i class="ti ti-loader me-1"></i>Processing…';
+      const res = await (await fetch(`/api/pay/${linkId}`, { method: 'POST' })).json();
+      done(res.link.amount, invoice.creditor, res.already_paid);
+    });
+  })();
+</script>
+</body>
+</html>

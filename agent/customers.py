@@ -67,7 +67,7 @@ class CustomerView:
         t = db.tickets
         week_ago = time.time() - 7 * 86400
         q = select(t.c.merchant_id, t.c.ticket_id, t.c.conversation_id, t.c.status, t.c.created_at,
-                   t.c.recovered_amount).order_by(t.c.created_at)
+                   t.c.recovered_amount).where(t.c.ticket_id.not_like("COL-%")).order_by(t.c.created_at)
         if merchant_id:
             q = q.where(t.c.merchant_id == merchant_id)
         contacts: dict[tuple, dict] = {}

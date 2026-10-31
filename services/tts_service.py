@@ -31,7 +31,7 @@ class SarvamTTSService:
         """Initialize Sarvam client with API key from config."""
         self.client = AsyncSarvamAI(api_subscription_key=settings.sarvam_api_key)
 
-    async def generate_audio(self, text: str, language_code: str = "hi-IN") -> bytes:
+    async def generate_audio(self, text: str, language_code: str = "hi-IN", speaker: str | None = None) -> bytes:
         """
         Convert text to speech.
 
@@ -49,9 +49,9 @@ class SarvamTTSService:
             enable_preprocessing=True,
         )
         try:
-            response = await self.client.text_to_speech.convert(speaker=settings.tts_speaker, **params)
+            response = await self.client.text_to_speech.convert(speaker=speaker or settings.tts_speaker, **params)
         except Exception as e:
-            print(f"[TTS] Speaker '{settings.tts_speaker}' failed ({e}); retrying with default speaker")
+            print(f"[TTS] Speaker '{speaker or settings.tts_speaker}' failed ({e}); retrying with default speaker")
             response = await self.client.text_to_speech.convert(**params)
 
         return base64.b64decode(response.audios[0])

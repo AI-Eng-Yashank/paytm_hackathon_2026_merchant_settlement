@@ -115,6 +115,7 @@ conversations = Table(
     Column("merchant_id", String(16), index=True), Column("channel", String(8)),
     Column("status", String(24)), Column("created_at", Float), Column("updated_at", Float),
     Column("mood", String(16), nullable=True), Column("mood_reason", Text, nullable=True),
+    Column("topic", String(40), nullable=True),   # e.g. "collections:INV-1001" for an AI call to merchant B
 )
 
 messages = Table(
@@ -128,13 +129,50 @@ messages = Table(
     Column("facts", Text, nullable=True),               # agent turns: tools used + key results (JSON), for memory
 )
 
+# ---------- collections (merchant A's AI collects what merchant B owes A) ----------
+
+invoices = Table(
+    "invoices", metadata,
+    Column("invoice_id", String(16), primary_key=True),
+    Column("creditor_id", String(16), index=True),            # merchant A (is owed)
+    Column("debtor_id", String(16), index=True),              # merchant B (owes)
+    Column("debtor_phone", String(16)),
+    Column("description", Text),
+    Column("amount", Integer), Column("paid_amount", Integer, default=0),
+    Column("issued_on", Date), Column("due_on", Date),
+    Column("status", String(16)),                              # OPEN | PROMISED | PAID | DISPUTED
+    Column("max_instalments", Integer, default=1),             # what A allows the AI to offer
+    Column("promise_date", Date, nullable=True), Column("promise_amount", Integer, nullable=True),
+    Column("dispute_reason", Text, nullable=True),
+)
+
+payment_links = Table(
+    "payment_links", metadata,
+    Column("link_id", String(16), primary_key=True),
+    Column("invoice_id", String(16), index=True),
+    Column("amount", Integer), Column("status", String(12)),  # ACTIVE | PAID
+    Column("created_at", Float), Column("paid_at", Float, nullable=True),
+)
+
+outbox = Table(
+    "outbox", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("created_at", Float), Column("channel", String(12)),       # whatsapp | email | dashboard
+    Column("to_id", String(16)), Column("to_name", String(120)), Column("to_contact", String(80)),
+    Column("subject", String(200)), Column("body", Text),
+    Column("invoice_id", String(16), nullable=True, index=True),
+    Column("status", String(12)),                                     # DRAFT | SENT
+    Column("sent_at", Float, nullable=True), Column("approved_by", String(80), nullable=True),
+)
+
 meta = Table(
     "meta", metadata,
     Column("key", String(40), primary_key=True), Column("value", Text),
 )
 
-MOCK_TABLES = [credits, bank_records, settlements, transactions, merchants, seed_tickets]  # delete order
-AGENT_TABLES = [audit_log, approvals, tickets, messages, conversations]
+MOCK_TABLES = [payment_links, invoices, credits, bank_records, settlements, transactions, merchants,
+               seed_tickets]  # delete order
+AGENT_TABLES = [audit_log, approvals, tickets, messages, conversations, outbox]
 
 
 def _neon_url(url: str) -> str:
@@ -216,9 +254,11 @@ def init_db():
     with engine.begin() as conn:
         seeded_on = conn.execute(select(meta.c.value).where(meta.c.key == "seeded_on")).scalar()
         has_data = conn.execute(select(merchants.c.merchant_id).limit(1)).first() is not None
+        has_invoices = conn.execute(select(invoices.c.invoice_id).limit(1)).first() is not None
     # Payment dates are relative to the day the data was seeded; reseed on a new day so
     # "kal" (yesterday) and RBI TAT ages in the demo scenarios stay correct.
-    if not has_data or seeded_on != date.today().isoformat():
+    # (Also reseed a database created before invoices existed.)
+    if not has_data or not has_invoices or seeded_on != date.today().isoformat():
         seed_mock_systems()
 
 
@@ -245,6 +285,13 @@ def seed_mock_systems():
                 "amount": c["amount"], "credit_date": today - timedelta(days=c["days_ago"]),
             } for c in data["credits"]])
         conn.execute(insert(seed_tickets), [{**t, "sort_order": i} for i, t in enumerate(data["tickets"])])
+        if data.get("invoices"):
+            conn.execute(insert(invoices), [{
+                **{k: v for k, v in inv.items() if k not in ("issued_days_ago", "due_in_days")},
+                "issued_on": today - timedelta(days=inv["issued_days_ago"]),
+                "due_on": today + timedelta(days=inv["due_in_days"]),
+                "paid_amount": 0, "status": "OPEN",
+            } for inv in data["invoices"]])
         conn.execute(delete(meta).where(meta.c.key == "seeded_on"))
         conn.execute(insert(meta), {"key": "seeded_on", "value": today.isoformat()})
 

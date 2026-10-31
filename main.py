@@ -14,6 +14,7 @@ import base64
 import json
 import shutil
 import uuid
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, Set
 
@@ -26,8 +27,10 @@ from config import settings
 from services import SarvamLLMService, SarvamSTTService, SarvamTTSService, ScriptedLLMService
 from storage import db
 from mock_systems.store import MockStore
+from mock_systems.collections_store import CollectionsStore
 from agent import guardrails
 from agent.audit import AuditStore
+from agent.collections import ScriptedCollectionsPlanner, collections_profile, draft_reminder, greeting
 from agent.conversations import ConversationStore
 from agent.customers import CustomerView
 from agent.resolver import Resolver
@@ -50,6 +53,7 @@ store = MockStore()
 audit = AuditStore()
 conversations = ConversationStore()
 customers = CustomerView(store, conversations, audit)
+cstore = CollectionsStore(store)
 RECORDINGS_DIR = Path(settings.recordings_dir) if settings.recordings_dir else Path(__file__).parent / "recordings"
 RECORDINGS_DIR.mkdir(parents=True, exist_ok=True)
 llm = ScriptedLLMService(settings.scripted_delay_s) if settings.offline else SarvamLLMService()
@@ -190,12 +194,12 @@ class TicketIn(BaseModel):
     conversation_id: Optional[str] = None
 
 
-async def _tts(text: str, language: str, tl: Timeline) -> Optional[bytes]:
+async def _tts(text: str, language: str, tl: Timeline, speaker: Optional[str] = None) -> Optional[bytes]:
     if not tts:
         return None
     try:
         with tl.span("text-to-speech (Bulbul)", f"{len(text)} chars, {language}") as span:
-            audio = await tts.generate_audio(text, language)
+            audio = await tts.generate_audio(text, language, **({"speaker": speaker} if speaker else {}))
             span.detail = f"{len(text)} chars → {len(audio) // 1024} KB audio"
         return audio
     except Exception as e:
@@ -241,11 +245,12 @@ async def _update_mood(conversation_id: str, merchant_id: str, allow_llm: bool =
 async def _handle_turn(*, merchant_id: str, text: str, ticket_id: str, channel: str, tl: Timeline,
                        conversation_id: Optional[str] = None, language: str = "hi-IN", speak: bool = False,
                        merchant_audio: Optional[bytes] = None, audio_ext: str = "webm",
-                       mood_llm: bool = True) -> dict:
+                       mood_llm: bool = True, profile=None, topic: Optional[str] = None,
+                       speaker: Optional[str] = None) -> dict:
     """One merchant turn: continue (or start) the conversation, run the agent with memory of earlier
     turns, save both sides' transcript and recordings, and rate the merchant's mood in the background."""
     merchant_audio_url = agent_audio_url = None
-    conv_id = await asyncio.to_thread(conversations.get_or_start, merchant_id, conversation_id, channel)
+    conv_id = await asyncio.to_thread(conversations.get_or_start, merchant_id, conversation_id, channel, topic)
     history = await asyncio.to_thread(conversations.history_for_llm, conv_id)
     merchant_msg = await asyncio.to_thread(conversations.add_message, conv_id, "merchant", text,
                                            ticket_id=ticket_id, channel=channel)
@@ -256,14 +261,14 @@ async def _handle_turn(*, merchant_id: str, text: str, ticket_id: str, channel: 
         tl.mark("recording saved", f"merchant audio → recordings/{path}")
 
     result = await resolver.resolve(ticket_id, merchant_id, text, language, timeline=tl,
-                                    history=history, conversation_id=conv_id)
+                                    history=history, conversation_id=conv_id, profile=profile)
     facts = _compact_facts(result.pop("facts"))
     agent_msg = await asyncio.to_thread(conversations.add_message, conv_id, "agent", result["reply"],
                                         ticket_id=ticket_id, channel=channel, facts=facts)
     await asyncio.to_thread(conversations.set_status, conv_id, result["status"])
 
     if speak:
-        audio = await _tts(result["reply"], language, tl)
+        audio = await _tts(result["reply"], language, tl, speaker)
         if audio:
             result["audio_b64"] = base64.b64encode(audio).decode()
             if settings.record_calls:
@@ -291,11 +296,12 @@ async def create_ticket(ticket: TicketIn):
 
 @app.post("/api/voice")
 async def voice_ticket(merchant_id: str = Form(...), audio: UploadFile = File(...),
-                       conversation_id: Optional[str] = Form(None)):
-    """Voice turn: Sarvam STT -> agent -> Sarvam TTS; both sides recorded."""
+                       conversation_id: Optional[str] = Form(None), invoice_id: Optional[str] = Form(None)):
+    """Voice turn: Sarvam STT -> agent -> Sarvam TTS; both sides recorded.
+    With invoice_id, the speaker is merchant B on a collections call (merchant_id is ignored)."""
     if not stt:
         raise HTTPException(400, "Voice needs SARVAM_API_KEY (running in offline mode)")
-    ticket_id = f"V-{uuid.uuid4().hex[:6].upper()}"
+    ticket_id = f"{'COL' if invoice_id else 'V'}-{uuid.uuid4().hex[:6].upper()}"
     tl = Timeline(ticket_id, "voice", broadcast)
     tl.mark("request received", "voice upload started")
     with tl.span("read upload") as span:
@@ -318,10 +324,14 @@ async def voice_ticket(merchant_id: str = Form(...), audio: UploadFile = File(..
         tl.mark("empty transcript", "nothing understood")
         log_error("voice: empty transcript", detail=f"{len(audio_bytes)} bytes uploaded", trace_id=ticket_id)
         raise HTTPException(422, retry_hint)
-    result = await _handle_turn(merchant_id=merchant_id, text=transcript, ticket_id=ticket_id, channel="voice",
-                                tl=tl, conversation_id=conversation_id, language=language, speak=True,
-                                merchant_audio=audio_bytes,
-                                audio_ext=Path(audio.filename or "a.webm").suffix.lstrip(".").lower() or "webm")
+    audio_ext = Path(audio.filename or "a.webm").suffix.lstrip(".").lower() or "webm"
+    if invoice_id:
+        result = await _collections_turn(invoice_id, transcript, conversation_id, tl, ticket_id,
+                                         language=language, merchant_audio=audio_bytes, audio_ext=audio_ext)
+    else:
+        result = await _handle_turn(merchant_id=merchant_id, text=transcript, ticket_id=ticket_id, channel="voice",
+                                    tl=tl, conversation_id=conversation_id, language=language, speak=True,
+                                    merchant_audio=audio_bytes, audio_ext=audio_ext)
     result["transcript"] = transcript
     return _finish(result, tl)
 
@@ -364,6 +374,163 @@ def call_recording(conversation_id: str):
         raise HTTPException(500, "Could not build the call recording")
     return FileResponse(str(path), media_type="audio/mpeg",
                         filename=f"call-{conversation_id}.mp3", content_disposition_type="inline")
+
+
+# ---------- collections: merchant A's AI calls merchant B about an unpaid invoice ----------
+
+def _collections_profile(invoice_id: str):
+    planner = ScriptedCollectionsPlanner(cstore, invoice_id) if settings.offline else None
+    return collections_profile(cstore, invoice_id, llm=planner)
+
+
+def _within_call_hours() -> bool:
+    start, end = (int(x) for x in settings.collections_call_hours.split("-"))
+    return start <= datetime.now().hour < end
+
+
+async def _collections_turn(invoice_id: str, text: str, conversation_id: Optional[str], tl: Timeline,
+                            ticket_id: str, language: str = "hi-IN", merchant_audio: Optional[bytes] = None,
+                            audio_ext: str = "webm") -> dict:
+    inv = await asyncio.to_thread(cstore.invoice, invoice_id)
+    if not inv:
+        raise HTTPException(404, "Unknown invoice")
+    profile = await asyncio.to_thread(_collections_profile, invoice_id)
+    result = await _handle_turn(merchant_id=inv["creditor_id"], text=text, ticket_id=ticket_id, channel="call",
+                                tl=tl, conversation_id=conversation_id, language=language, speak=True,
+                                merchant_audio=merchant_audio, audio_ext=audio_ext, profile=profile,
+                                topic=f"collections:{invoice_id}", speaker=settings.collections_tts_speaker)
+    result["invoice"] = await asyncio.to_thread(lambda: cstore.view(cstore.invoice(invoice_id)))
+    await broadcast({"type": "invoice_updated", "invoice": result["invoice"]})
+    return result
+
+
+@app.get("/collections")
+async def serve_collections():
+    return FileResponse(str(STATIC_PATH / "collections.html"), media_type="text/html")
+
+
+@app.get("/pay/{link_id}")
+async def serve_pay_page(link_id: str):
+    return FileResponse(str(STATIC_PATH / "pay.html"), media_type="text/html")
+
+
+@app.get("/api/collections/invoices")
+def list_invoices(creditor_id: Optional[str] = None):
+    return cstore.list_invoices(creditor_id)
+
+
+@app.get("/api/collections/summary")
+def collections_summary(creditor_id: Optional[str] = None):
+    return cstore.summary(creditor_id)
+
+
+@app.post("/api/collections/{invoice_id}/call")
+async def start_collections_call(invoice_id: str):
+    """Start an AI call to merchant B: opening line (who is calling, recorded, is this B?), spoken and recorded."""
+    inv = await asyncio.to_thread(cstore.invoice, invoice_id)
+    if not inv:
+        raise HTTPException(404, "Unknown invoice")
+    if inv["status"] == "PAID":
+        raise HTTPException(409, "This invoice is already paid")
+    if not _within_call_hours():
+        raise HTTPException(409, f"Outside calling hours ({settings.collections_call_hours}h). "
+                                 "The AI only calls merchants during the day.")
+    view = await asyncio.to_thread(cstore.view, inv)
+    tl = Timeline(f"CALL-{invoice_id}", "call", broadcast)
+    conv_id = await asyncio.to_thread(conversations.get_or_start, inv["creditor_id"], None, "call",
+                                      f"collections:{invoice_id}")
+    opening = greeting(view)
+    msg_id = await asyncio.to_thread(conversations.add_message, conv_id, "agent", opening, channel="call")
+    result = {"conversation_id": conv_id, "greeting": opening, "invoice": view, "agent_audio_url": None}
+    audio = await _tts(opening, "hi-IN", tl, settings.collections_tts_speaker)
+    if audio:
+        result["audio_b64"] = base64.b64encode(audio).decode()
+        if settings.record_calls:
+            path = _save_recording(conv_id, f"{msg_id}-agent.wav", audio)
+            await asyncio.to_thread(conversations.set_audio, msg_id, path)
+            result["agent_audio_url"] = f"/recordings/{path}"
+    await broadcast({"type": "call_started", "invoice": view, "conversation_id": conv_id})
+    return result
+
+
+class CallTurnIn(BaseModel):
+    text: str
+    conversation_id: str
+
+
+@app.post("/api/collections/{invoice_id}/turn")
+async def collections_turn(invoice_id: str, body: CallTurnIn):
+    """Merchant B speaks (typed here; voice goes through /api/voice with invoice_id)."""
+    ticket_id = f"COL-{uuid.uuid4().hex[:6].upper()}"
+    tl = Timeline(ticket_id, "call", broadcast)
+    tl.mark("request received", f"collections call turn, {len(body.text)} chars")
+    result = await _collections_turn(invoice_id, body.text, body.conversation_id, tl, ticket_id)
+    return _finish(result, tl)
+
+
+@app.post("/api/collections/{invoice_id}/reminder")
+async def draft_collections_reminder(invoice_id: str):
+    """Draft a WhatsApp reminder in merchant A's name, with a fresh payment link. A approves before it's sent."""
+    inv = await asyncio.to_thread(cstore.invoice, invoice_id)
+    if not inv:
+        raise HTTPException(404, "Unknown invoice")
+    view = await asyncio.to_thread(cstore.view, inv)
+    if view["status"] in ("PAID", "DISPUTED"):
+        raise HTTPException(409, f"Invoice is {view['status'].lower()}; no reminder needed")
+    link = await asyncio.to_thread(cstore.create_link, invoice_id, view["outstanding"])
+    url = settings.public_base_url + link["url_path"]
+    body, source = await draft_reminder(view, link, url)
+    msg_id = await asyncio.to_thread(lambda: cstore.add_message(
+        channel="whatsapp", to_id=view["debtor_id"], to_name=view["debtor"], to_contact=view["debtor_phone"],
+        subject=f"Payment reminder {invoice_id}", body=body, invoice_id=invoice_id, status="DRAFT"))
+    message = await asyncio.to_thread(cstore.message, msg_id)
+    await broadcast({"type": "outbox", "message": message})
+    return {**message, "drafted_by": source, "payment_link": url}
+
+
+class SendIn(BaseModel):
+    body: str
+    approved_by: str = "merchant A"
+
+
+@app.post("/api/outbox/{message_id}/send")
+async def send_outbox_message(message_id: int, body: SendIn):
+    """Merchant A approved the draft (possibly edited): send it. Simulated: marked SENT in the outbox."""
+    msg = await asyncio.to_thread(cstore.message, message_id)
+    if not msg or msg["status"] != "DRAFT":
+        raise HTTPException(409, "Not a draft")
+    await asyncio.to_thread(cstore.send_message, message_id, body.body, body.approved_by)
+    message = await asyncio.to_thread(cstore.message, message_id)
+    await broadcast({"type": "outbox", "message": message})
+    return message
+
+
+@app.get("/api/outbox")
+def list_outbox():
+    return cstore.outbox()
+
+
+@app.get("/api/pay/{link_id}")
+def get_payment_link(link_id: str):
+    link = cstore.link(link_id)
+    if not link:
+        raise HTTPException(404, "Unknown payment link")
+    return {"link": link, "invoice": cstore.view(cstore.invoice(link["invoice_id"]))}
+
+
+@app.post("/api/pay/{link_id}")
+async def pay_link(link_id: str):
+    """Demo UPI payment by merchant B: applies the amount to the invoice and tells merchant A."""
+    result = await asyncio.to_thread(cstore.pay, link_id)
+    if not result["link"]:
+        raise HTTPException(404, "Unknown payment link")
+    if not result["already_paid"]:
+        inv = result["invoice"]
+        await asyncio.to_thread(lambda: cstore.notify_creditor(
+            cstore.invoice(inv["invoice_id"]), f"Payment received: {inv['debtor']}",
+            f"{inv['debtor']} paid Rs {result['link']['amount']} for {inv['invoice_id']} via UPI link {link_id}."))
+        await broadcast({"type": "invoice_paid", "invoice": inv, "amount": result["link"]["amount"], "link_id": link_id})
+    return result
 
 
 @app.get("/api/customers")

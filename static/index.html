@@ -28,6 +28,7 @@
           <span class="form-check-label">Detailed log</span>
         </label>
         <a href="/customers" class="btn btn-outline-primary"><i class="ti ti-users me-1"></i>Customers</a>
+        <a href="/collections" class="btn btn-outline-primary"><i class="ti ti-cash me-1"></i>Collections</a>
         <button id="btn-batch" class="btn btn-primary"><i class="ti ti-player-play me-1"></i>Run 50-ticket batch</button>
         <button id="btn-reset" class="btn btn-outline-secondary"><i class="ti ti-refresh me-1"></i>Reset demo</button>
       </div>
@@ -69,6 +70,7 @@
               <div class="card-body d-flex flex-column gap-2">
                 <select id="merchant" class="form-select" aria-label="Merchant"></select>
                 <div id="scenarios" class="d-flex flex-wrap gap-1"></div>
+                <div id="call-banner" class="call-banner" hidden></div>
                 <div id="chat" class="chat-box" aria-live="polite"></div>
                 <form id="chat-form" class="d-flex gap-2">
                   <input id="chat-input" class="form-control" placeholder="Mera settlement kab aayega?" autocomplete="off">

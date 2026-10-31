@@ -23,9 +23,10 @@ from config import settings
 SAFE_REPLY = ("Maine aapki details check kar li hain. Ek specialist inhe confirm karke jaldi aapse "
               "sampark karega.")
 
-ID_RE = re.compile(r"\b(UTR\s?\d{6,}|RFND\d{3,}|CR-\d{3,}|TXN\d{3,})\b", re.I)
+ID_RE = re.compile(r"\b(UTR\s?\d{6,}|RFND\d{3,}|CR-\d{3,}|TXN\d{3,}|INV-\d{3,}|PAY-[A-Z0-9]{4,})\b", re.I)
+# Amounts must start with a digit ("Rs," alone once matched an empty number and crashed the check)
 AMOUNT_RE = re.compile(
-    r"(?:₹|\brs\.?|\binr)\s?([\d,]+(?:\.\d+)?)|([\d,]+(?:\.\d+)?)\s?(?:rupaye|rupees|rupay|रुपये|रुपए|rs\b)", re.I)
+    r"(?:₹|\brs\.?|\binr)\s?(\d[\d,]*(?:\.\d+)?)|(\d[\d,]*(?:\.\d+)?)\s?(?:rupaye|rupees|rupay|रुपये|रुपए|rs\b)", re.I)
 
 PAST = r"(?:gaya|gayi|gaye|chuka|chuki|chuke|diya|diye|di\b|kar diya|ho gaya|ho chuka|done)"
 # Money has reached the merchant's account
@@ -38,8 +39,11 @@ ACTION_CLAIMS = {
     "refund": (re.compile(rf"\b(?:refund|wapas|reverse|lauta)\w*\b.*?\b{PAST}", re.I), r'"refund_ref"'),
     "credit": (re.compile(rf"\binstant credit\b.*?\b(?:kar diya|ho gaya|de diya|issued|done)\b", re.I), r'"credit_id"'),
 }
+# A payment link's amount, as the tool created it
+LINK_AMOUNT_RE = re.compile(r'"link_id":\s*"(PAY-[A-Z0-9]+)",\s*"amount":\s*(\d+)')
 LEAK_RE = re.compile(r"[{}]|approval[_ ]id|risk[_ ]score|settlements-l2|\btool\b|\bguardrail\b", re.I)
-CREDITED_RE = re.compile(r'"bank_status":\s*"CREDITED"|"status":\s*"CREDITED"')
+# Money confirmed: bank credited, an instant credit ran, or (collections) the invoice shows PAID
+CREDITED_RE = re.compile(r'"bank_status":\s*"CREDITED"|"status":\s*"CREDITED"|"status":\s*"PAID"')
 
 
 @dataclass
@@ -85,6 +89,15 @@ def check(reply: str, evidence: str, merchant_text: str) -> FactCheck:
         for name, (claim, proof) in ACTION_CLAIMS.items():
             if claim.search(sentence) and not re.search(proof, evidence):
                 issues.append(f"says a {name} was done, but no {name} action ran")
+
+    # A reply that names a payment link must state that link's own amount (not another figure it knows)
+    link_amounts = {link_id.upper(): int(amount) for link_id, amount in LINK_AMOUNT_RE.findall(evidence)}
+    stated = {int(float((a or b).replace(",", ""))) for a, b in AMOUNT_RE.findall(reply)}
+    for raw in re.findall(r"PAY-[A-Z0-9]{4,}", reply, re.I):
+        actual = link_amounts.get(raw.upper())
+        if actual is not None and stated and actual not in stated:
+            issues.append(f"says {raw} is for ₹{', ₹'.join(f'{s:,}' for s in sorted(stated))} "
+                          f"but that link is for ₹{actual:,}")
 
     if LEAK_RE.search(reply):
         issues.append("contains internal details (JSON, ids, risk score, queue or tool names)")

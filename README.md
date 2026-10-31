@@ -106,6 +106,23 @@ Re-run on **Neon Postgres (AWS Singapore)** the same day: again **50/50 correct 
 - **Mood:** after each turn, Sarvam rates the conversation calm / worried / angry with a reason (keyword fallback offline and for the batch).
 - **Customers page** (`/customers`): every merchant sorted by who needs attention, and for each one a 0–100 health score with every deduction explained, money (recovered, credited, waiting for approval, RBI compensation due), tickets timeline, and conversations with full transcript and audio playback.
 
+## Collections teammate (merchant A's AI calls merchant B)
+
+The same agent (shared loop in `agent/resolver.py` with an `AgentProfile` per job) also collects money other shops owe a merchant. Demo: **Sharma General Store** (A) supplies four shops on credit (`/collections`).
+
+| Invoice | Owed by (B) | Demo path |
+|---|---|---|
+| INV-1001 | Gupta Medicals, ₹12,000, 12 days overdue, 2 instalments allowed | AI call → UPI link → B pays on `/pay/...` → dashboard updates live |
+| INV-1002 | Balaji Tiffin Centre, ₹3,500 | "3 din baad de dunga" → promise recorded for the right date |
+| INV-1003 | New Fashion Hub, ₹18,000 | "maal kharab tha" → dispute recorded, handed back to A |
+| INV-1004 | Mehta Electronics, ₹7,200, not due yet | 💬 Reminder: AI drafts a WhatsApp in A's name, A edits/approves, then it's sent (simulated) |
+
+- **📞 AI call** opens the agent dashboard in call mode: you play merchant B (type or use the mic); voice, recordings, full call recording, transcript and fact-check all work as for support chats.
+- **How the AI behaves on a call:** says it's an AI calling for A and that the call is recorded; confirms it's speaking to B before any amount; asks before sending a link; never threatens or pressures; no discounts; instalments only if A allowed them; promises within 7 days; disputes go to A. Calls only 8am–7pm.
+- **Guardrails in code:** link amount must be the full outstanding or an allowed instalment; promise date inside the window (the AI is told today's date); max 3 unpaid links; invoice locked to the call; paid/disputed invoices can't get new links.
+- **Fact-check additions:** invoice and link ids; a reply naming a link must state that link's own amount (caught live: a ₹12,000 link described as ₹6,000); reminders must be addressed creditor → debtor.
+- **Outbox:** reminder drafts waiting for A's approval, messages sent, and notes to A (promise, dispute, payment received). Nothing is really sent; WhatsApp/SMS need a provider and approved templates (DLT for SMS) in production.
+
 ## MCP server (ops tools for AI assistants)
 
 `mcp_server.py` lets Claude Desktop, Claude Code or Cursor work with SettlementResolver. Every tool calls the running app, so the same guardrails, audit log and live dashboard apply. Start the app first.

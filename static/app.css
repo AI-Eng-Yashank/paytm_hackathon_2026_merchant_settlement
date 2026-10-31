@@ -131,3 +131,15 @@
 .bubble .play-rec + .meta { display: block; }
 .transcript .rec-download { color: inherit; opacity: .8; }
 .call-recording audio { width: 100%; height: 36px; }
+
+/* Collections */
+.outbox { max-height: 640px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.outbox-item { border: 1px solid var(--tblr-border-color); border-radius: 10px; padding: 10px; }
+.outbox-item.draft { border-color: var(--sr-warn); }
+.pay-card { max-width: 420px; margin: 0 auto; }
+.call-banner { border: 1px solid var(--sr-active); border-radius: 10px; padding: 8px 10px; font-size: 13px;
+  background: color-mix(in srgb, var(--sr-active) 10%, transparent); }
+.call-banner .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--sr-bad);
+  margin-right: 6px; animation: sr-blink 1s infinite; }
+@media (prefers-reduced-motion: reduce) { .call-banner .live-dot { animation: none; } }
+.bubble a { color: inherit; text-decoration: underline; word-break: break-all; }

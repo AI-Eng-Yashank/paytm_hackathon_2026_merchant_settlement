@@ -48,6 +48,12 @@ class Settings(BaseSettings):
     llm_retries: int = 1
     scripted_delay_s: float = 0.35  # offline planner pause per step, so animations are visible
 
+    # Collections (merchant A's AI calls merchant B about an unpaid invoice)
+    collections_max_promise_days: int = 7   # latest promise-to-pay date the AI may accept
+    collections_call_hours: str = "8-19"    # respectful calling window (RBI recovery practice: 8am-7pm)
+    collections_tts_speaker: str = "simran_hi_recovery"
+    public_base_url: str = "http://localhost:8000"   # used in payment links sent to merchant B
+
     # Detailed step-by-step timing log (can also be toggled from the dashboard)
     detailed_log: bool = True
 

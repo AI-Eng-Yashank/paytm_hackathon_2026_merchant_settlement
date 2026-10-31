@@ -1,9 +1,10 @@
 """
-The SettlementResolver agent loop.
+The agent loop, shared by every job (settlement support, collections calls).
 
-ticket -> LLM proposes a tool call -> guardrail gate -> execute / queue for approval / block
-       -> result back to LLM -> ... -> final reply to merchant
+turn -> LLM proposes a tool call -> guardrail gate -> execute / queue for approval / block
+     -> result back to LLM -> ... -> fact-checked reply
 
+What differs per job (instructions, tools, guardrails) comes from an AgentProfile.
 Every step is broadcast to the dashboard and written to the audit log.
 """
 
@@ -18,6 +19,7 @@ from storage import db
 from mock_systems.store import MockStore
 from agent import factcheck, guardrails
 from agent.audit import AuditStore
+from agent.profile import AgentProfile
 from agent.prompts import SYSTEM_PROMPT
 from agent.timing import Timeline
 from agent.tools import TOOL_SCHEMAS, TOOL_SYSTEM, execute_tool
@@ -41,18 +43,37 @@ def _found_something(tool: str, result: dict) -> bool:
     return tool in {"check_payment_status", "get_settlement_status"} | RECOVERY_TOOLS
 
 
+def settlement_profile(store: MockStore) -> AgentProfile:
+    """Settlement support: a merchant asks about their own payouts."""
+    def prefix(merchant_id: str) -> str:
+        m = store.lookup_merchant(merchant_id)
+        return f"[Merchant {merchant_id}: {m.get('name')}, {m.get('city')}]"
+
+    return AgentProfile(
+        name="settlement", system_prompt=SYSTEM_PROMPT, tools=TOOL_SCHEMAS, tool_system=TOOL_SYSTEM,
+        check=lambda actor, name, args: guardrails.check(store, actor, name, args),
+        execute=lambda actor, name, args: execute_tool(store, actor, name, args),
+        user_prefix=prefix, found=_found_something,
+        action_tools=RECOVERY_TOOLS, recovery_tools=RECOVERY_TOOLS,
+        rewrite_hint=("If you want to tell the merchant the money has arrived, first call "
+                      "trigger_bank_reconciliation with the UTR to confirm it (SETTLED only means it "
+                      "was sent to the bank). Otherwise say when it is expected."),
+    )
+
+
 class Resolver:
-    """Runs one ticket through the agent loop."""
+    """Runs one turn through the agent loop."""
 
     def __init__(self, llm, store: MockStore, audit: AuditStore, emit: Emit):
         self.llm = llm
         self.store = store
         self.audit = audit
         self.emit = emit
+        self.settlement = settlement_profile(store)
 
     async def resolve(self, ticket_id: str, merchant_id: str, text: str, language: str = "hi-IN",
                       timeline: Timeline | None = None, history: list[dict] | None = None,
-                      conversation_id: str | None = None) -> dict:
+                      conversation_id: str | None = None, profile: AgentProfile | None = None) -> dict:
         """
         Resolve one merchant turn.
 
@@ -63,6 +84,8 @@ class Resolver:
             {"ticket_id", "status", "reply", "steps", "duration_ms", "facts"}
             facts: tools used and key results, stored with the reply for the next turn's memory
         """
+        p = profile or self.settlement
+        llm = p.llm or self.llm
         started = time.time()
         tl = timeline or Timeline(ticket_id, "ticket", self.emit)
         tl.mark("agent start", f"{merchant_id}: {text}" + (f" ({len(history)} earlier messages)" if history else ""))
@@ -71,11 +94,10 @@ class Resolver:
         await self.emit({"type": "ticket_start", "ticket_id": ticket_id, "merchant_id": merchant_id, "text": text,
                          "conversation_id": conversation_id})
 
-        merchant = self.store.lookup_merchant(merchant_id)
         messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": p.system_prompt},
             *(history or []),
-            {"role": "user", "content": f"[Merchant {merchant_id}: {merchant.get('name')}, {merchant.get('city')}]\n{text}"},
+            {"role": "user", "content": f"{p.user_prefix(merchant_id)}\n{text}"},
         ]
 
         steps, recovered = 0, 0.0
@@ -87,7 +109,7 @@ class Resolver:
         facts: list[dict] = []
         reply = None
         # Fact-check inputs: everything tools returned (this turn and earlier), and what the merchant said
-        evidence = [m["content"] for m in history or [] if m["role"] == "system"]
+        evidence = [p.facts] + [m["content"] for m in history or [] if m["role"] == "system"]
         merchant_said = " ".join([m["content"] for m in history or [] if m["role"] == "user"] + [text])
         rewrites_left = 1
 
@@ -95,7 +117,7 @@ class Resolver:
             await self.emit({"type": "thinking", "ticket_id": ticket_id})
             try:
                 with tl.span(f"AI call #{llm_round}", f"{len(messages)} messages in context") as span:
-                    msg = await self.llm.chat(messages, TOOL_SCHEMAS)
+                    msg = await llm.chat(messages, p.tools)
                     span.detail = (f"→ tools: {', '.join(tc.function.name for tc in msg.tool_calls)}"
                                    if msg.tool_calls else f"→ reply ({len(msg.content or '')} chars)")
             except Exception as e:
@@ -103,7 +125,7 @@ class Resolver:
                 await self.emit({"type": "error", "ticket_id": ticket_id, "detail": f"LLM error: {e}"})
                 self.audit.log(ticket_id, "llm_error", reason=str(e))
                 escalated = True
-                reply = "Maaf kijiye, abhi system me dikkat hai. Aapka ticket specialist ko bhej diya gaya hai, woh jaldi call karenge."
+                reply = p.error_reply
                 break
 
             if msg.reasoning_content:
@@ -127,10 +149,8 @@ class Resolver:
                     messages.append({"role": "assistant", "content": candidate})
                     messages.append({"role": "system", "content":
                                      "Fact-check (internal) rejected that reply: " + "; ".join(fc.issues) +
-                                     ". Fix it: if you want to tell the merchant the money has arrived, first call "
-                                     "trigger_bank_reconciliation with the UTR to confirm it (SETTLED only means it "
-                                     "was sent to the bank). Otherwise say when it is expected. Use only facts your "
-                                     "tools returned, and don't mention this check."})
+                                     ". Fix it. " + p.rewrite_hint + " Use only facts your tools returned, "
+                                     "and don't mention this check."})
                     continue
                 # Still wrong after a rewrite: send a safe reply and let a human review the ticket
                 reply = factcheck.SAFE_REPLY
@@ -153,27 +173,27 @@ class Resolver:
                 except json.JSONDecodeError:
                     args = {}
                 reason = args.pop("reason", "")
-                system = TOOL_SYSTEM.get(name, "crm")
+                system = p.tool_system.get(name, "crm")
 
                 await self.emit({"type": "tool_call", "ticket_id": ticket_id, "tool": name, "system": system,
                                  "args": args, "reason": reason})
 
                 # Guardrail + tool share one DB connection and run off the event loop
                 with tl.span(f"tool {name}", json.dumps(args, ensure_ascii=False)) as span:
-                    gate, result = await asyncio.to_thread(self._gate_and_run, merchant_id, name, args)
+                    gate, result = await asyncio.to_thread(self._gate_and_run, p, merchant_id, name, args)
                     span.detail = (f"{gate.decision} → " + json.dumps(result, ensure_ascii=False)
                                    if result is not None else f"{gate.decision}: {'; '.join(gate.reasons)}")
-                if name in RECOVERY_TOOLS:
+                if name in p.action_tools:
                     tl.mark(f"guardrail {name}", f"{gate.decision} {'; '.join(gate.reasons)}")
                     await self.emit({"type": "guardrail", "ticket_id": ticket_id, "tool": name,
                                      "decision": gate.decision, "reasons": gate.reasons})
 
                 if gate.decision == "ALLOW":
-                    if name in RECOVERY_TOOLS:
+                    if name in p.recovery_tools:
                         recovered += float(result.get("amount", 0))
-                    if name == "escalate_to_human":
+                    if name in p.escalate_tools:
                         escalated = True
-                    if _found_something(name, result):
+                    if p.found(name, result):
                         found_facts = True
                     facts.append({"tool": name, "args": args, "result": result})
                 elif gate.decision == "NEEDS_APPROVAL":
@@ -197,7 +217,7 @@ class Resolver:
 
         if not reply:
             escalated = True
-            reply = "Aapka ticket humare specialist ko bhej diya gaya hai. Woh jaldi aapse sampark karenge."
+            reply = p.fallback_reply
 
         # RESOLVED only when the agent actually found the merchant's transaction(s); a reply that just
         # asks a question (or promises to look) is NEEDS_INFO, so it doesn't inflate the numbers
@@ -219,11 +239,11 @@ class Resolver:
     async def _emit_metrics(self):
         await self.emit({"type": "metrics", "metrics": await asyncio.to_thread(self.audit.metrics)})
 
-    def _gate_and_run(self, merchant_id: str, name: str, args: dict):
+    def _gate_and_run(self, p: AgentProfile, actor_id: str, name: str, args: dict):
         """Runs in a worker thread: guardrail check, then the tool if allowed, on one connection."""
         with db.session():
-            gate = guardrails.check(self.store, merchant_id, name, args)
-            result = execute_tool(self.store, merchant_id, name, args) if gate.decision == "ALLOW" else None
+            gate = p.check(actor_id, name, args)
+            result = p.execute(actor_id, name, args) if gate.decision == "ALLOW" else None
         return gate, result
 
     def _create_approval(self, ticket_id, merchant_id, name, args, reasons, agent_reason) -> dict:

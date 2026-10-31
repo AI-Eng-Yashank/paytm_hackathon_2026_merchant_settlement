@@ -7,7 +7,7 @@
 .venv/bin/python -m pytest
 ```
 
-**100 automated tests, about 20 seconds.** They run on a throwaway SQLite database and log folder with the offline planner, so they never touch Neon, Sarvam, your `.env` keys or `logs/`.
+**117 automated tests, about 20 seconds.** They run on a throwaway SQLite database and log folder with the offline planner, so they never touch Neon, Sarvam, your `.env` keys or `logs/`.
 
 Before the demo, at the venue, also run the **live checks** (real Neon + Sarvam, read-only, a few small API calls):
 
@@ -109,6 +109,19 @@ RUN_LIVE=1 .venv/bin/python -m pytest -m live -v
 | Internal details | JSON, approval ids, risk score rejected |
 | **In the agent** | Bad draft rewritten (audit: FAIL then PASS); still bad after rewrite: safe reply + escalated |
 | Demo scenarios | All six pass the fact-check first time |
+
+### Collections (`tests/test_collections.py`, 15 tests)
+| Test | Checks |
+|---|---|
+| **Opening line** | Says AI + on whose behalf + recorded; asks for B; no amount or invoice before identity |
+| Wrong person | Gets no details |
+| **Happy path** | Identity → link → B pays on the pay page (twice = no-op) → "paid" only after get_invoice; A notified |
+| Instalment | ₹6,000 link only because A allows 2 instalments |
+| Promise | "kal tak" → tomorrow's date recorded |
+| Dispute | Recorded, escalated, A notified |
+| **Guardrails** | No discounts / below-instalment amounts; promise window; other merchants locked out; 3-link limit; paid invoice; calling hours |
+| **Reminder** | Draft needs A's approval (editable), then SENT; can't send twice; drafts must go creditor → debtor |
+| Separation | Collections calls stay out of settlement metrics and customer health |
 
 ### MCP server (`tests/test_mcp.py`, 9 tests)
 | Test | Checks |
