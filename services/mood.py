@@ -8,11 +8,24 @@ heuristic for Hinglish/Hindi/English, so the customer dashboard always has a val
 import json
 import re
 
+from sarvamai import AsyncSarvamAI
+
 from config import settings
 from agent.timing import log_error
 
 
 MOODS = ("calm", "worried", "angry")
+
+# Module-level singleton — one HTTP connection pool shared across all mood calls,
+# instead of creating (and discarding) a new client on every conversation turn.
+_sarvam_client: AsyncSarvamAI | None = None
+
+
+def _get_client() -> AsyncSarvamAI:
+    global _sarvam_client
+    if _sarvam_client is None:
+        _sarvam_client = AsyncSarvamAI(api_subscription_key=settings.sarvam_api_key)
+    return _sarvam_client
 
 ANGRY = ["fraud", "bakwas", "chor", "cheat", "complaint", "consumer court", "police", "worst", "pagal",
          "ganda", "bekar service", "kab tak", "har baar", "phir se", "!!!", "धोखा", "शिकायत", "बकवास"]
@@ -42,8 +55,7 @@ async def rate_mood(merchant_texts: list[str], allow_llm: bool = True) -> tuple[
     if settings.offline or not allow_llm:
         return heuristic_mood(merchant_texts)
     try:
-        from sarvamai import AsyncSarvamAI
-        client = AsyncSarvamAI(api_subscription_key=settings.sarvam_api_key)
+        client = _get_client()
         response = await client.chat.completions(
             messages=[{"role": "system", "content": PROMPT},
                       {"role": "user", "content": "\n".join(f"- {t}" for t in merchant_texts[-6:])}],
