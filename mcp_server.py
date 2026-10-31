@@ -147,10 +147,11 @@ def get_customer_overview(merchant_id: str) -> dict:
 @server.tool(annotations=READ_ONLY)
 def get_conversation_transcript(conversation_id: str) -> dict:
     """Full transcript of a conversation: what the merchant and the AI said, in order, with the tools the AI
-    used on each turn and links to call recordings."""
+    used on each turn, per-turn recordings, and one full call recording (both sides) if any turn was spoken."""
     c = _call("GET", f"/api/conversations/{conversation_id}")
     return {"conversation_id": c["conversation_id"], "merchant_id": c["merchant_id"], "mood": c["mood"],
             "mood_reason": c["mood_reason"],
+            "full_call_recording": f"{API_URL}{c['call_recording_url']}" if c.get("call_recording_url") else None,
             "turns": [{"speaker": "merchant" if m["role"] == "merchant" else "AI", "text": m["content"],
                        "channel": m["channel"], "ticket_id": m["ticket_id"],
                        "recording": f"{API_URL}{m['audio_url']}" if m["audio_url"] else None,

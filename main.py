@@ -31,6 +31,7 @@ from agent.audit import AuditStore
 from agent.conversations import ConversationStore
 from agent.customers import CustomerView
 from agent.resolver import Resolver
+from services import call_recording as call_recording_service
 from services.mood import rate_mood
 from agent.timing import Timeline, debug, error_log, log_error, log_timing_line, timing_log
 from agent.tools import TOOL_SYSTEM, execute_tool
@@ -83,6 +84,17 @@ _session = (f"=== server start | mode={'offline-scripted' if settings.offline el
             f"detailed_log={debug.enabled} ===")
 timing_log.info(_session)
 error_log.info(_session)
+
+
+@app.middleware("http")
+async def no_stale_frontend(request: Request, call_next):
+    """Make browsers re-check the dashboard's HTML/JS/CSS on every load (cheap 304 if unchanged),
+    so a fix to app.js reaches the page without a hard refresh."""
+    response = await call_next(request)
+    path = request.url.path
+    if path in ("/", "/customers") or path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
 
 
 @app.middleware("http")
@@ -232,6 +244,7 @@ async def _handle_turn(*, merchant_id: str, text: str, ticket_id: str, channel: 
                        mood_llm: bool = True) -> dict:
     """One merchant turn: continue (or start) the conversation, run the agent with memory of earlier
     turns, save both sides' transcript and recordings, and rate the merchant's mood in the background."""
+    merchant_audio_url = agent_audio_url = None
     conv_id = await asyncio.to_thread(conversations.get_or_start, merchant_id, conversation_id, channel)
     history = await asyncio.to_thread(conversations.history_for_llm, conv_id)
     merchant_msg = await asyncio.to_thread(conversations.add_message, conv_id, "merchant", text,
@@ -239,6 +252,7 @@ async def _handle_turn(*, merchant_id: str, text: str, ticket_id: str, channel: 
     if merchant_audio and settings.record_calls:
         path = _save_recording(conv_id, f"{merchant_msg}-merchant.{audio_ext}", merchant_audio)
         await asyncio.to_thread(conversations.set_audio, merchant_msg, path)
+        merchant_audio_url = f"/recordings/{path}"
         tl.mark("recording saved", f"merchant audio → recordings/{path}")
 
     result = await resolver.resolve(ticket_id, merchant_id, text, language, timeline=tl,
@@ -255,9 +269,10 @@ async def _handle_turn(*, merchant_id: str, text: str, ticket_id: str, channel: 
             if settings.record_calls:
                 path = _save_recording(conv_id, f"{agent_msg}-agent.wav", audio)
                 await asyncio.to_thread(conversations.set_audio, agent_msg, path)
+                agent_audio_url = f"/recordings/{path}"
 
     asyncio.create_task(_update_mood(conv_id, merchant_id, allow_llm=mood_llm))
-    result["conversation_id"] = conv_id
+    result.update(conversation_id=conv_id, merchant_audio_url=merchant_audio_url, agent_audio_url=agent_audio_url)
     return result
 
 
@@ -323,7 +338,32 @@ def get_conversation(conversation_id: str):
     for m in conv["messages"]:
         m["audio_url"] = f"/recordings/{m['audio_path']}" if m["audio_path"] else None
         m["facts"] = json.loads(m["facts"]) if m["facts"] else None
+    recorded = sum(1 for m in conv["messages"] if m["audio_path"])
+    # ?n= changes whenever a turn is added, so browsers don't replay an older, shorter version
+    conv["call_recording_url"] = (f"/api/conversations/{conversation_id}/call-recording.mp3?n={recorded}"
+                                  if recorded else None)
+    conv["recorded_turns"] = recorded
     return conv
+
+
+@app.get("/api/conversations/{conversation_id}/call-recording.mp3")
+def call_recording(conversation_id: str):
+    """The whole call as one MP3: every recorded turn (merchant and AI) in order, with short pauses."""
+    with db.session():
+        conv = conversations.get(conversation_id)
+    if not conv:
+        raise HTTPException(404, "Unknown conversation")
+    clips = [RECORDINGS_DIR / m["audio_path"] for m in conv["messages"]
+             if m["audio_path"] and (RECORDINGS_DIR / m["audio_path"]).exists()]
+    if not clips:
+        raise HTTPException(404, "No recorded turns in this conversation")
+    try:
+        path = call_recording_service.build(clips, RECORDINGS_DIR / conversation_id)
+    except Exception as e:
+        log_error("call recording", e, trace_id=conversation_id)
+        raise HTTPException(500, "Could not build the call recording")
+    return FileResponse(str(path), media_type="audio/mpeg",
+                        filename=f"call-{conversation_id}.mp3", content_disposition_type="inline")
 
 
 @app.get("/api/customers")

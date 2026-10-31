@@ -74,3 +74,9 @@ def test_reset_restores_seed_state(store):
     store.retry_settlement("M1001", "TXN240001")
     store.reset()
     assert store.get_settlement_status("M1001", "TXN240001")["settlement_status"] == "FAILED"
+
+
+def test_spoken_txn_ids_with_spaces_or_dashes_still_match(store):
+    # Speech-to-text writes "TXN240004" as "TXN 240 004"
+    for spoken in ["TXN 240 004", "txn-240004", " Txn 240004 "]:
+        assert store.check_payment_status("M1003", spoken)["txn_id"] == "TXN240004"

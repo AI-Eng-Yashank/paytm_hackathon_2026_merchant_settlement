@@ -7,7 +7,7 @@
 .venv/bin/python -m pytest
 ```
 
-**85 automated tests, about 15 seconds.** They run on a throwaway SQLite database and log folder with the offline planner, so they never touch Neon, Sarvam, your `.env` keys or `logs/`.
+**100 automated tests, about 20 seconds.** They run on a throwaway SQLite database and log folder with the offline planner, so they never touch Neon, Sarvam, your `.env` keys or `logs/`.
 
 Before the demo, at the venue, also run the **live checks** (real Neon + Sarvam, read-only, a few small API calls):
 
@@ -84,7 +84,7 @@ RUN_LIVE=1 .venv/bin/python -m pytest -m live -v
 | **Audit writer** | 25 queued writes kept in order, none lost; reads see queued writes |
 | **Sarvam timeout** | One retry after a timeout; gives up after that; bad requests aren't retried |
 
-### Conversations, recordings, mood, customers (`tests/test_conversations.py`, 19 tests)
+### Conversations, recordings, mood, customers (`tests/test_conversations.py`, 21 tests)
 | Test | Checks |
 |---|---|
 | **Memory** | Turns continue one conversation; agent sees earlier turns + facts note; facts note never reaches the merchant |
@@ -96,6 +96,19 @@ RUN_LIVE=1 .venv/bin/python -m pytest -m live -v
 | **Health score** | Every deduction listed; DEMO-4 shows approval + RBI compensation; one conversation = one contact |
 | Customer list | Contacted and least healthy first |
 | Batch | One conversation per ticket |
+| **Full call recording** | One MP3 with both sides in order; rebuilt (longer) after another turn; none for text-only conversations |
+
+### Fact-check (`tests/test_factcheck.py`, 12 tests)
+| Test | Checks |
+|---|---|
+| Correct replies pass | Real UTR + amount; "credited" when the bank confirmed it; future tense ("aa jayega") |
+| Merchant's own amounts | ₹500 / ₹1,500 the merchant mentioned can be repeated; RBI ₹100/day always allowed |
+| **Overclaim** | "paisa aa gaya" / "has been credited" / "आ गया" without bank confirmation is rejected |
+| **Invented data** | Unknown UTR or amount is rejected |
+| **Action claims** | "wapas bhej diya" / "credit kar diya" / "retry kar diya" need that action to have run |
+| Internal details | JSON, approval ids, risk score rejected |
+| **In the agent** | Bad draft rewritten (audit: FAIL then PASS); still bad after rewrite: safe reply + escalated |
+| Demo scenarios | All six pass the fact-check first time |
 
 ### MCP server (`tests/test_mcp.py`, 9 tests)
 | Test | Checks |

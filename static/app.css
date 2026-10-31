@@ -112,3 +112,22 @@
 @media (max-width: 576px) {
   .batch-grid { grid-template-columns: repeat(5, 1fr); }
 }
+
+.chat-note { align-self: center; font-size: 12px; color: var(--sr-sub); padding: 4px 10px;
+  border: 1px dashed var(--tblr-border-color); border-radius: 12px; }
+
+/* Voice message waiting for its transcript */
+.bubble.voice-pending { opacity: .85; }
+.bubble.voice-pending .meta::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 6px;
+  border-radius: 50%; background: currentColor; animation: sr-blink 1s infinite; vertical-align: middle; }
+@keyframes sr-blink { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .bubble.voice-pending .meta::after { animation: none; } }
+
+/* Play buttons for recordings in chat bubbles */
+.play-rec { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; padding: 2px 8px; font-size: 12px;
+  border-radius: 10px; border: 1px solid currentColor; background: transparent; color: inherit; opacity: .9;
+  text-decoration: none; cursor: pointer; }
+.play-rec:hover { opacity: 1; }
+.bubble .play-rec + .meta { display: block; }
+.transcript .rec-download { color: inherit; opacity: .8; }
+.call-recording audio { width: 100%; height: 36px; }

@@ -208,3 +208,50 @@ def test_batch_creates_a_conversation_per_ticket(client):
         time.sleep(0.2)
     with db.engine.connect() as c:
         assert c.execute(db.conversations.select()).fetchall().__len__() == 50
+
+
+# ---------- full call recording (both sides, one file) ----------
+
+def _wav(seconds: float, freq: int = 440, rate: int = 16000) -> bytes:
+    import io, math, struct, wave
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate)
+        w.writeframes(b"".join(struct.pack("<h", int(8000 * math.sin(2 * math.pi * freq * i / rate)))
+                               for i in range(int(seconds * rate))))
+    return buf.getvalue()
+
+
+class WavTTS:
+    async def generate_audio(self, text, language):
+        return _wav(1.0, 660, 22050)
+
+
+def _voice_turn(client, conversation_id=None):
+    data = {"merchant_id": "M1001", **({"conversation_id": conversation_id} if conversation_id else {})}
+    return client.post("/api/voice", data=data, files={"audio": ("clip.wav", _wav(0.8), "audio/wav")}).json()
+
+
+def test_full_call_recording_joins_both_sides_in_order(client, monkeypatch):
+    monkeypatch.setattr(main, "stt", FakeSTT())
+    monkeypatch.setattr(main, "tts", WavTTS())
+    first = _voice_turn(client)
+    conv = client.get(f"/api/conversations/{first['conversation_id']}").json()
+    assert conv["recorded_turns"] == 2 and conv["call_recording_url"].endswith("?n=2")
+
+    r = client.get(conv["call_recording_url"])
+    assert r.status_code == 200 and r.headers["content-type"] == "audio/mpeg"
+    assert r.content[:3] == b"ID3" or r.content[:2] == b"\xff\xfb"
+    size_two_turns = len(r.content)
+
+    _voice_turn(client, first["conversation_id"])          # another merchant + AI turn
+    conv = client.get(f"/api/conversations/{first['conversation_id']}").json()
+    assert conv["call_recording_url"].endswith("?n=4")
+    assert len(client.get(conv["call_recording_url"]).content) > size_two_turns   # rebuilt, longer
+
+
+def test_text_only_conversation_has_no_call_recording(client):
+    r = say(client, "TXN240001 nahi aaya")
+    conv = client.get(f"/api/conversations/{r['conversation_id']}").json()
+    assert conv["call_recording_url"] is None
+    assert client.get(f"/api/conversations/{r['conversation_id']}/call-recording.mp3").status_code == 404

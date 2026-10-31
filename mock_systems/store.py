@@ -9,12 +9,18 @@ change during a demo), and related rows are fetched with joins rather than one q
 """
 
 import random
+import re
 from datetime import date, timedelta
 
 from sqlalchemy import func, insert, or_, select, update
 
 from config import settings
 from storage import db
+
+
+def _txn_key(txn_id: str | None) -> str:
+    """Spoken ids come back from speech-to-text as "TXN 240 004" or "txn-240004"; match them anyway."""
+    return re.sub(r"[\s\-_.]", "", txn_id or "").upper()
 
 
 def _row(result) -> dict | None:
@@ -67,7 +73,7 @@ class MockStore:
             return _row(c.execute(
                 select(T, S.c.status.label("settlement_status"), S.c.utr, S.c.failure_reason)
                 .join(S, S.c.txn_id == T.c.txn_id, isouter=True)
-                .where(T.c.txn_id == (txn_id or "").strip().upper(), T.c.merchant_id == merchant_id)))
+                .where(T.c.txn_id == _txn_key(txn_id), T.c.merchant_id == merchant_id)))
 
     def twin_of(self, txn: dict) -> dict | None:
         """The other half of a duplicate-debit pair, if any."""
@@ -98,7 +104,7 @@ class MockStore:
                     prior.label("prior_credits"), today.label("credited_today"))
              .join(S, S.c.txn_id == T.c.txn_id, isouter=True)
              .join(B, B.c.utr == S.c.utr, isouter=True)
-             .where(T.c.txn_id == (txn_id or "").strip().upper(), T.c.merchant_id == merchant_id))
+             .where(T.c.txn_id == _txn_key(txn_id), T.c.merchant_id == merchant_id))
         with db.use() as c:
             return _row(c.execute(q))
 

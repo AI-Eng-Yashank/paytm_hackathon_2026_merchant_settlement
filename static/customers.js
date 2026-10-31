@@ -220,17 +220,33 @@ async function showTranscript(conversationId) {
         <h3 class="card-title"><i class="ti ti-file-text me-2"></i>Transcript ${esc(c.conversation_id)}</h3>
         <div class="card-actions">${moodChip(c.mood, true)} <span class="small text-secondary ms-1">${esc(c.mood_reason || '')}</span></div>
       </div>
+      ${c.call_recording_url ? `
+      <div class="card-body border-bottom call-recording">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <i class="ti ti-headphones"></i><b>Full call recording</b>
+          <span class="small text-secondary">merchant + AI, ${c.recorded_turns} recorded turn${c.recorded_turns === 1 ? '' : 's'} in order</span>
+          <a class="small ms-auto" href="${esc(c.call_recording_url)}" download="call-${esc(c.conversation_id)}.mp3"><i class="ti ti-download"></i> download MP3</a>
+        </div>
+        <audio controls preload="metadata" src="${esc(c.call_recording_url)}"></audio>
+      </div>` : `<div class="card-body border-bottom small text-secondary"><i class="ti ti-headphones-off me-1"></i>No voice turns in this conversation, so there is no call recording (text only).</div>`}
       <div class="card-body transcript">
         ${c.messages.map((m) => `
           <div class="bubble ${m.role === 'merchant' ? 'merchant' : 'agent'}">
             <div>${esc(m.content)}</div>
-            ${m.audio_url ? `<audio controls preload="none" src="${esc(m.audio_url)}"></audio>` : ''}
+            ${m.audio_url ? `<audio controls preload="metadata" src="${esc(m.audio_url)}"></audio>
+              <a class="small rec-download" href="${esc(m.audio_url)}" download><i class="ti ti-download"></i> download</a>` : ''}
             ${m.facts ? `<div class="facts">${m.facts.map((f) => `<span class="badge bg-secondary-lt">${esc(f.tool)}</span>`).join(' ')}</div>` : ''}
             <span class="meta">${m.role === 'merchant' ? 'Merchant' : 'AI'} · ${esc(m.channel || 'text')} · ${new Date(m.created_at * 1000).toLocaleTimeString()}${m.ticket_id ? ` · ${esc(m.ticket_id)}` : ''}</span>
           </div>`).join('')}
       </div>
     </div>`;
   animate('#transcript .bubble', { opacity: [0, 1], y: [8, 0], delay: stagger(40), duration: ms(250), ease: 'outQuad' });
+  // If a browser refuses a recording, say so in logs/errors.log
+  document.querySelectorAll('#transcript audio, .call-recording audio').forEach((a) => a.addEventListener('error', () => {
+    fetch('/api/debug/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ where: 'recording playback (customers page)',
+        message: `${a.error?.code}: ${a.error?.message || 'cannot play'} (${a.getAttribute('src')}) ${navigator.userAgent}` }) });
+  }));
   document.getElementById('transcript').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'nearest' });
 }
 

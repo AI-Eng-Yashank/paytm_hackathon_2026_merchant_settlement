@@ -323,6 +323,28 @@ function bubble(who, text, meta = '') {
   return el;
 }
 
+// ▶ Play button on a chat bubble for its recording (your voice, or the AI's spoken reply)
+function addPlayButton(el, url, label) {
+  if (!url) return;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'play-rec';
+  btn.innerHTML = `<i class="ti ti-player-play"></i> ${label}`;
+  let audio = null;
+  btn.addEventListener('click', () => {
+    if (audio && !audio.paused) { audio.pause(); return; }
+    audio = audio || new Audio(url);
+    audio.onplay = () => { btn.innerHTML = `<i class="ti ti-player-pause"></i> ${label}`; };
+    audio.onpause = audio.onended = () => { btn.innerHTML = `<i class="ti ti-player-play"></i> ${label}`; };
+    audio.onerror = () => {
+      reportError('recording playback', `${audio.error?.code}: ${audio.error?.message || 'cannot play'} (${url})`);
+      btn.outerHTML = `<a class="play-rec" href="${url}" download><i class="ti ti-download"></i> download recording</a>`;
+    };
+    audio.play().catch((e) => reportError('recording playback', `${e.name}: ${e.message} (${url})`));
+  });
+  (el.querySelector('.meta') || el).before(btn);
+}
+
 // Plays the reply and records when audio actually starts and ends; then ships the browser timeline.
 function playAudio(b64, tl) {
   if (!b64) { tl?.mark('no audio to play'); if (tl) sendClientTimeline(tl); return; }
@@ -341,6 +363,9 @@ function playAudio(b64, tl) {
 // ---------- conversation (memory) ----------
 // One conversation per merchant session; the server keeps the transcript and gives the agent earlier turns.
 let conversationId = null;
+// Bumped by "New": a reply still in flight from the previous conversation is then ignored,
+// instead of landing in the new chat and switching it back to the old conversation.
+let chatEpoch = 0;
 
 function setConversation(id) {
   conversationId = id;
@@ -350,17 +375,51 @@ function setConversation(id) {
 }
 
 function newConversation() {
+  chatEpoch += 1;
   setConversation(null);
-  $('#chat').innerHTML = '';
+  recordedTurns = 0;
+  stopCallAudio();
+  $('#btn-call-rec').disabled = true;
+  $('#chat').innerHTML = '<div class="chat-note"><i class="ti ti-plus me-1"></i>New conversation started. '
+    + 'The AI won\'t see the earlier messages.</div>';
+  animate('#conv-badge', { scale: [1.35, 1], duration: ms(350), ease: 'outBack' });
+  animate('.chat-note', { opacity: [0, 1], y: [-6, 0], duration: ms(250) });
 }
 
 $('#btn-new-conv').addEventListener('click', newConversation);
+
+// ---------- full call recording (you + AI, one file) ----------
+let recordedTurns = 0;
+let callAudio = null;
+
+function noteRecorded(data) {
+  recordedTurns += [data.merchant_audio_url, data.agent_audio_url].filter(Boolean).length;
+  $('#btn-call-rec').disabled = recordedTurns === 0;
+}
+
+function stopCallAudio() {
+  if (callAudio) callAudio.pause();
+  callAudio = null;
+  $('#btn-call-rec').innerHTML = '<i class="ti ti-headphones me-1"></i>Call';
+}
+
+$('#btn-call-rec').addEventListener('click', () => {
+  if (callAudio && !callAudio.paused) { stopCallAudio(); return; }
+  // ?n= changes with each new recorded turn, so the browser fetches the longer version
+  const url = `/api/conversations/${conversationId}/call-recording.mp3?n=${recordedTurns}`;
+  callAudio = new Audio(url);
+  callAudio.onended = stopCallAudio;
+  callAudio.onerror = () => { reportError('call recording playback', `${callAudio?.error?.code} (${url})`); stopCallAudio(); };
+  callAudio.play().then(() => { $('#btn-call-rec').innerHTML = '<i class="ti ti-player-stop me-1"></i>Stop'; })
+    .catch((e) => reportError('call recording playback', `${e.name}: ${e.message}`));
+});
 $('#merchant').addEventListener('change', newConversation);
 
 async function sendTicket(text, ticketId) {
   const tl = new ClientTimeline('text');
   tl.mark('send clicked', text);
   const merchant_id = $('#merchant').value;
+  const epoch = chatEpoch;
   bubble('merchant', text);
   const typing = bubble('agent', '…');
   tl.mark('request sent');
@@ -370,13 +429,19 @@ async function sendTicket(text, ticketId) {
   const data = await res.json();
   tl.mark('response received', `round trip`, performance.now() - tl.t0 - tl.at('request sent'));
   typing.remove();
+  if (epoch !== chatEpoch) {  // "New" was clicked while this reply was on its way
+    tl.mark('reply ignored', 'a new conversation was started meanwhile');
+    return;
+  }
   if (!res.ok) {
     bubble('agent', `Error: ${data.detail}`);
     reportError(`POST /api/tickets ${res.status}`, data.detail, JSON.stringify(tl.events));
     return;
   }
   setConversation(data.conversation_id);
-  bubble('agent', data.reply, `${data.ticket_id} · ${data.status.replace('_', ' ').toLowerCase()} · ${data.steps} steps`);
+  const reply = bubble('agent', data.reply, `${data.ticket_id} · ${data.status.replace('_', ' ').toLowerCase()} · ${data.steps} steps`);
+  addPlayButton(reply, data.agent_audio_url, 'replay AI');
+  noteRecorded(data);
   tl.mark('reply shown');
   finishClientTimeline(tl, data.ticket_id, data.timing);
   playAudio(data.audio_b64, tl);
@@ -484,6 +549,12 @@ async function onRecordingStopped(tl) {
   }
 
   setMicStatus('Sending…');
+  const epoch = chatEpoch;
+  // Your voice message appears on your side straight away; its text fills in once transcribed
+  const mine = bubble('merchant', '');
+  mine.classList.add('voice-pending');
+  mine.innerHTML = `<i class="ti ti-microphone me-1"></i>Voice message · ${(recordedMs / 1000).toFixed(1)}s`
+    + '<span class="meta">transcribing…</span>';
   const typing = bubble('agent', '…');
   try {
     const form = new FormData();
@@ -495,20 +566,31 @@ async function onRecordingStopped(tl) {
     const data = await res.json();
     tl.mark('response received', 'round trip', performance.now() - tl.t0 - tl.at('request sent'));
     typing.remove();
+    if (epoch !== chatEpoch) {  // "New" was clicked while this reply was on its way
+      tl.mark('reply ignored', 'a new conversation was started meanwhile');
+      return;
+    }
+    mine.classList.remove('voice-pending');
     if (!res.ok) {
+      mine.querySelector('.meta').textContent = 'not understood';
       bubble('agent', data.detail || 'Something went wrong. Please try again.');
       // Browser timeline goes with the error so mic/recording problems are visible in errors.log
       reportError(`POST /api/voice ${res.status}`, data.detail, JSON.stringify(tl.events));
       return;
     }
-    bubble('merchant', data.transcript, 'voice');
+    mine.innerHTML = `${esc(data.transcript)}<span class="meta"><i class="ti ti-microphone"></i> voice</span>`;
+    addPlayButton(mine, data.merchant_audio_url, 'your recording');
     setConversation(data.conversation_id);
-    bubble('agent', data.reply, `${data.ticket_id} · ${data.status.replace('_', ' ').toLowerCase()}`);
+    const reply = bubble('agent', data.reply, `${data.ticket_id} · ${data.status.replace('_', ' ').toLowerCase()}`);
+    addPlayButton(reply, data.agent_audio_url, 'replay AI');
+    noteRecorded(data);
     tl.mark('transcript + reply shown');
     finishClientTimeline(tl, data.ticket_id, data.timing);
     playAudio(data.audio_b64, tl);
   } catch (err) {
     typing.remove();
+    mine.classList.remove('voice-pending');
+    mine.querySelector('.meta').textContent = 'not sent';
     bubble('agent', 'Could not reach the server. Please try again.');
     reportError('voice upload', err.message, JSON.stringify(tl.events));
   } finally {
@@ -646,6 +728,9 @@ const HANDLERS = {
     $('#trace').innerHTML = '';
     $('#chat').innerHTML = '';
     setConversation(null);
+    recordedTurns = 0;
+    stopCallAudio();
+    $('#btn-call-rec').disabled = true;
     $('#batch-grid').innerHTML = '';
     $('#batch-note').textContent = 'Runs 50 generated tickets through the agent.';
     $('#approvals').innerHTML = '';
